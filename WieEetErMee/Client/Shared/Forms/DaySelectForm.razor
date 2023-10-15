@@ -1,0 +1,41 @@
+﻿<EditForm Model="selectedDate" OnValidSubmit="BeforeOnValidSubmit" class="mb-3">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <label class="d-block mb-2">
+        Datum:
+        <input type="date" @bind="selectedDate.Date" class="form-control" />
+    </label>
+
+    <button type="submit" class="btn btn-primary">Kiezen</button>
+</EditForm>
+
+
+@code {
+    [Parameter, EditorRequired]
+    public EventCallback<DateOnly> OnValidSubmit { get; set; }
+
+    [Parameter]
+    public DateOnly? Default { get; set; }
+
+    async Task BeforeOnValidSubmit()
+    {
+        await OnValidSubmit.InvokeAsync(selectedDate.Date);
+    }
+
+    protected override void OnInitialized()
+    {
+        if (Default is not null)
+        {
+            selectedDate.Date = Default.Value;
+        }
+    }
+
+    SelectedDate selectedDate = new();
+
+    class SelectedDate
+    {
+        [Required(ErrorMessage = "Een datum invullen is verplicht!")]
+        public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+    }
+}

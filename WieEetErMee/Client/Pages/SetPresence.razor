@@ -1,0 +1,60 @@
+﻿@page "/set-presense";
+@using WieEetErMee.Client.Shared.Forms
+@inject UserRepository _userRepo;
+@inject UserPresenceRepository _userPresenceRepo;
+
+<Title>Afwezig / Aanwezig Zetten</Title>
+
+<h2 class="mb-2">Aankomende week:</h2>
+
+<ul class="list-group mb-3">
+    @for (int i = 0; i < 7; i++)
+    {
+        DateOnly NewDate = currentDate.AddDays(i);
+        <li class="list-group-item">
+            <button @onclick="_ => SelectDate(NewDate)" class="btn">@NewDate</button>
+        </li>
+    }
+</ul>
+
+
+<h2 class="mb-2">kies een dag</h2>
+
+<DaySelectForm OnValidSubmit="SelectDate"></DaySelectForm>
+
+<hr class="my-3" />
+
+@if (userPresence is not null)
+{
+    <h2 class="mb-2">Je staat op dit moment <b>@(userPresence.IsPresent ? "aangemeld" : "afgemeld")</b> voor deze dag</h2>
+
+    <button class="btn btn-success" type="button" @onclick="_ => SetUserPresence(true)">Aanmelden</button>
+    <button class="btn btn-danger" type="button" @onclick="_ => SetUserPresence(false)">Afmelden</button>
+}
+
+
+@code {
+    UserPresenceDTO? userPresence;
+
+    DateOnly currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
+    DateOnly selectedDate;
+
+    async Task SelectDate(DateOnly date)
+    {
+        selectedDate = date;
+        userPresence = await _userPresenceRepo.GetPresenceForCurrentUser(selectedDate);
+    }
+
+    async Task SetUserPresence(bool isPresent)
+    {
+        if (userPresence is null)
+        {
+            return;
+        }
+
+        userPresence.IsPresent = isPresent;
+
+        await _userPresenceRepo.SetPresenceForUser(selectedDate, userPresence);
+    }
+}

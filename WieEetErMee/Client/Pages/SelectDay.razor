@@ -1,0 +1,37 @@
+﻿@page "/day";
+@inject NavigationManager _navManager;
+
+<Title>Selecteer een dag</Title>
+
+
+<h2 class="mb-2">Van deze week:</h2>
+
+<ul class="list-group mb-3">
+    @for (int i = 0; i < 7; i++)
+    {
+        DateOnly newDate = startOfWeek.AddDays(i);
+
+        <li class="list-group-item">
+            <a class="btn" href="/day/@newDate.ToLongDateString()">@newDate.ToShortDateString()</a>
+        </li>
+    }
+</ul>
+
+<h2>Of kies een specifiek dag:</h2>
+
+<DaySelectForm OnValidSubmit="OnDateSelect" Default="startOfWeek"></DaySelectForm>
+
+
+@code {
+    DateOnly startOfWeek = new(
+            DateTime.UtcNow.Year,
+            DateTime.UtcNow.Month,
+            DateTime.UtcNow.Day - (int)DateTime.UtcNow.DayOfWeek
+        );
+
+    void OnDateSelect(DateOnly date)
+    {
+        _navManager.NavigateTo($"/day/{date.ToLongDateString()}");
+    }
+
+}

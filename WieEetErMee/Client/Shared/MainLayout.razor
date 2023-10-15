@@ -1,0 +1,76 @@
+﻿@inherits LayoutComponentBase
+@inject CurrentUserRepository _currentUserRepo;
+@inject UserRepository _userRepo;
+
+<CascadingValue Value="setAlertMessage">
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+
+        <main>
+            @if (alertMessage is not null)
+            {
+                <div role="alert" class="alert alert-info">
+                    @alertMessage
+                </div>
+            }
+
+            @if (currentUser is not null)
+            {
+                <article class="content px-4">
+                    @Body
+                </article>
+            } else
+            {
+                <CustomDialog IsOpen=true >
+                    @if (allUsers is null)
+                    {
+                        <p>aan het laden..</p>
+                    }
+                    else
+                    {
+                        <h2>Welke gebuiker ben jij?</h2>
+
+                        <ul class="list-group">
+                            @foreach (string user in allUsers)
+                            {
+                                <li class="list-group-item">
+                                    <button class="btn lead" type="button" @onclick="_ => SetUserAsCurrent(user)">@user</button>
+                                </li>                            
+                            }
+                        </ul>
+                    }
+                </CustomDialog>
+            }
+        </main>
+    </div>
+</CascadingValue>
+
+@code {
+    string? alertMessage;
+
+    string? currentUser;
+
+    List<string>? allUsers;
+
+    void setAlertMessage(string message)
+    {
+        alertMessage = message;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        allUsers = await _userRepo.GetAllUsersNames();
+
+
+        currentUser = await _currentUserRepo.GetCurrentUser();
+    }
+
+    async Task SetUserAsCurrent(string user)
+    {
+        currentUser = user;
+        await _currentUserRepo.SetCurrentUser(currentUser);
+    }
+}

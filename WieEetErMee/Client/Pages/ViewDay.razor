@@ -1,0 +1,98 @@
+﻿@page "/day/{DateOnlyFromUrl}";
+@inject DayPresenceRepository _dayPresenceRepo;
+@inject UserPresenceRepository _userPresenceRepo;
+
+
+@if (DayPresence is null)
+{
+    <p>aan het laden..</p>
+}
+else
+{
+    <div class="p-3">
+
+        <Title>Aanwezigheid voor @DayPresence.Date</Title>
+
+        <ul class="list-group">
+            @foreach (UserPresenceDTO userPresence in DayPresence.TotalPresence)
+            {
+                <li class="list-group-item" @onclick="_ => SelectUser(userPresence)">
+
+                    <span class="lead d-block mb-1">@userPresence.Name</span>
+                    is <strong>@(userPresence.IsPresent ? "wel" : "niet")</strong> aanwezig
+
+                </li>
+            }
+        </ul>
+
+    </div>
+}
+
+<CustomDialog @bind-IsOpen="isDialogOpen">
+
+    @if (selectedUserPresense is not null)
+    {
+        <h2 class="mb-2">Aanwezigheid voor gebruiker @selectedUserPresense.Name op </h2>
+
+        <EditForm Model="selectedUserPresense" OnValidSubmit="UpdateUserPresense">
+
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" @bind="selectedUserPresense.IsPresent" type="checkbox" role="switch" id="isPresent">
+                <label class="form-check-label" for="isPresent">Is aanwezig</label>
+            </div>
+
+            <button type="submit" class="btn btn-success"><span class="oi oi-check"></span> Opslaan</button>
+            <button type="button" class="btn btn-secondary" @onclick="_ => isDialogOpen = false"><span class="oi oi-x"></span> Sluiten</button>
+        </EditForm>
+    }
+    else
+    {
+        <h2 class="mb-2">Geen gebruiker geselecteerd</h2>
+
+        <button @onclick="_ => isDialogOpen = false" class="btn btn-secondary"><span class="oi oi-x"></span> Sluiten</button>
+    }
+
+</CustomDialog>
+
+
+
+@code {
+    [Parameter]
+    public string DateOnlyFromUrl { get; set; }
+
+    [CascadingParameter]
+    public Action<string> SetAlertMessage { get; set; }
+
+    DateOnly date;
+    DayPresenceDTO? DayPresence;
+
+
+    bool isDialogOpen = false;
+
+    UserPresenceDTO? selectedUserPresense;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (DateOnly.TryParse(DateOnlyFromUrl, out date) is false)
+        {
+            SetAlertMessage("Oei, deze dag ken ik niet..");
+            return;
+        }
+
+        DayPresence = await _dayPresenceRepo.GetPresenceForDate(date);
+    }
+
+
+
+    void SelectUser(UserPresenceDTO user)
+    {
+        selectedUserPresense = user;
+        isDialogOpen = true;
+    }
+
+    async Task UpdateUserPresense()
+    {
+        await _userPresenceRepo.SetPresenceForUser(date, selectedUserPresense!);
+        isDialogOpen = false;
+    }
+}

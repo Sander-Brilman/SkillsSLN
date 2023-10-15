@@ -1,0 +1,77 @@
+﻿@page "/settings";
+@inject UserRepository _userRepo;
+
+
+@if (userSettings is null)
+{
+    <p>Aan het laden..</p>
+}
+else
+{
+    <Title>standaard instellingen aanpassen</Title>
+
+    <EditForm Model="userSettings" OnValidSubmit="OnValidSubmit">
+
+        <h2 class="text-secondary mb-2"><i>Ik ben standaard aanwezig op:</i></h2>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input"  id="DefaultPresentOnMonday" @bind="userSettings.DefaultPresentOnMonday" type="checkbox" role="switch">
+            <label class="form-check-label" for="DefaultPresentOnMonday">Maandag</label>
+        </div>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" id="DefaultPresentOnTuesday" @bind="userSettings.DefaultPresentOnTuesday" type="checkbox" role="switch">
+            <label class="form-check-label" for="DefaultPresentOnTuesday">Dinsdag</label>
+        </div>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" id="DefaultPresentOnWednesday" @bind="userSettings.DefaultPresentOnWednesday" type="checkbox" role="switch">
+            <label class="form-check-label" for="DefaultPresentOnWednesday">Woensdag</label>
+        </div>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" id="DefaultPresentOnThursday" @bind="userSettings.DefaultPresentOnThursday" type="checkbox" role="switch">
+            <label class="form-check-label" for="DefaultPresentOnThursday">Donderdag</label>
+        </div>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" id="DefaultPresentOnFriday" @bind="userSettings.DefaultPresentOnFriday" type="checkbox" role="switch">
+            <label class="form-check-label" for="DefaultPresentOnFriday">Vrijdag</label>
+        </div>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" id="DefaultPresentOnSaturday" @bind="userSettings.DefaultPresentOnSaturday" type="checkbox" role="switch">
+            <label class="form-check-label" for="DefaultPresentOnSaturday">Zaterdag</label>
+        </div>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" id="DefaultPresentOnSunday" @bind="userSettings.DefaultPresentOnSunday" type="checkbox" role="switch">
+            <label class="form-check-label" for="DefaultPresentOnSunday">Zondag</label>
+        </div>
+
+        <button class="btn btn-success" type="submit"><span class="oi oioi-check"></span> Opslaan</button>
+
+        <a href="/" class="btn btn-secondary">Terug naar menu</a>
+
+    </EditForm>
+}
+
+
+@code {
+    UserSettingsDTO? userSettings;
+
+    [CascadingParameter]
+    public Action<string> SetAlert { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        userSettings = await _userRepo.GetCurrentUser();
+    }
+
+    async Task OnValidSubmit()
+    {
+        await _userRepo.UpdateCurrentUser(userSettings!);
+
+        SetAlert("Veranderingen opgeslagen!");
+    }
+}
