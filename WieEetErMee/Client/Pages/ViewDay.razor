@@ -13,8 +13,28 @@ else
 
         <Title>Aanwezigheid voor @DayPresence.Date</Title>
 
+        <h2 class="mb-2">Aanwezig:</h2>
+
+        <ul class="list-group mb-4">
+
+            @foreach (UserPresenceDTO userPresence in DayPresence.TotalPresence.Where(p => p.IsPresent))
+            {
+                <li class="list-group-item" @onclick="_ => SelectUser(userPresence)">
+
+                    <span class="lead d-block mb-1">@userPresence.Name</span>
+                    is <strong>@(userPresence.IsPresent ? "wel" : "niet")</strong> aanwezig
+
+                </li>
+
+            }
+
+        </ul>
+
+
+        <h2 class="mb-2">Afwezig:</h2>
+
         <ul class="list-group">
-            @foreach (UserPresenceDTO userPresence in DayPresence.TotalPresence)
+            @foreach (UserPresenceDTO userPresence in DayPresence.TotalPresence.Where(p => p.IsPresent == false))
             {
                 <li class="list-group-item" @onclick="_ => SelectUser(userPresence)">
 
