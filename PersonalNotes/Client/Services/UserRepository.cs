@@ -8,17 +8,4 @@ public class UserRepository
     {
         _httpClient = httpClient;
     }
-
-    public async Task 
-
-    public async Task CreateUser(string email, string password)
-    {
-
-    }
-
-    public async Task<bool> LogUserIn(string email, string password)
-    {
-
-
-    }
 }
