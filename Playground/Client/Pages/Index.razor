@@ -8,7 +8,7 @@
 Welcome to your new app.
 
 
-<EditForm Model="loginInfo" class="mb-3">
+<EditForm Model="loginInfo" class="mb-3" OnValidSubmit="OnSubmit">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <ValidationSummary></ValidationSummary>
 
@@ -39,13 +39,17 @@ Welcome to your new app.
 
     async Task OnSubmit()
     {
-        await _httpClient.PostAsJsonAsync("/api/user/login", loginInfo);
+        var resonse = await _httpClient.PostAsJsonAsync("/api/user/login", loginInfo);
 
+
+        text = $"response: {resonse.StatusCode}";
 
     }
 
     async Task FetchText()
     {
-        text = await _httpClient.GetFromJsonAsync<string>("/api/user/text");
+        var response = await _httpClient.GetAsync("/api/user/text");
+
+        text = await response.Content.ReadAsStringAsync();
     }
 }
