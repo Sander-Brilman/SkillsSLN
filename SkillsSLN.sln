@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaygroundHostedWasm.Client
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaygroundHostedWasm.Shared", "PlaygroundHostedWasm\Shared\PlaygroundHostedWasm.Shared.csproj", "{ADED57D5-FB6A-4C21-A303-FC4AD8FA4391}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaygroundConsole", "PlaygroundConsole\PlaygroundConsole.csproj", "{00F37F32-4953-4DB8-B9D7-196E59DF8A95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaygroundConsole", "PlaygroundConsole\PlaygroundConsole.csproj", "{00F37F32-4953-4DB8-B9D7-196E59DF8A95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthWithApi", "AuthWithApi\AuthWithApi.csproj", "{22C71B2A-23FE-4674-9F3D-12011A80B40D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{00F37F32-4953-4DB8-B9D7-196E59DF8A95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00F37F32-4953-4DB8-B9D7-196E59DF8A95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00F37F32-4953-4DB8-B9D7-196E59DF8A95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22C71B2A-23FE-4674-9F3D-12011A80B40D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22C71B2A-23FE-4674-9F3D-12011A80B40D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22C71B2A-23FE-4674-9F3D-12011A80B40D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22C71B2A-23FE-4674-9F3D-12011A80B40D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
