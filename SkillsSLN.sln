@@ -21,13 +21,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlayGround", "PlayGround", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PersonalNotes", "PersonalNotes", "{228FA865-490A-45C3-BD92-0920E14E4CDA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaygroundStandAloneWasm", "PlaygroundStandAloneWasm\PlaygroundStandAloneWasm.csproj", "{CBE3921D-F8F6-4AC0-9648-87C04C19BC14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaygroundStandAloneWasm", "PlaygroundStandAloneWasm\PlaygroundStandAloneWasm.csproj", "{CBE3921D-F8F6-4AC0-9648-87C04C19BC14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaygroundHostedWasm.Server", "PlaygroundHostedWasm\Server\PlaygroundHostedWasm.Server.csproj", "{B7A123F6-7B33-4861-BDE8-AF31E5471607}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaygroundHostedWasm.Server", "PlaygroundHostedWasm\Server\PlaygroundHostedWasm.Server.csproj", "{B7A123F6-7B33-4861-BDE8-AF31E5471607}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaygroundHostedWasm.Client", "PlaygroundHostedWasm\Client\PlaygroundHostedWasm.Client.csproj", "{34D8C321-EFEC-4FFD-8052-D3AF9C32B1D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaygroundHostedWasm.Client", "PlaygroundHostedWasm\Client\PlaygroundHostedWasm.Client.csproj", "{34D8C321-EFEC-4FFD-8052-D3AF9C32B1D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaygroundHostedWasm.Shared", "PlaygroundHostedWasm\Shared\PlaygroundHostedWasm.Shared.csproj", "{ADED57D5-FB6A-4C21-A303-FC4AD8FA4391}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaygroundHostedWasm.Shared", "PlaygroundHostedWasm\Shared\PlaygroundHostedWasm.Shared.csproj", "{ADED57D5-FB6A-4C21-A303-FC4AD8FA4391}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaygroundConsole", "PlaygroundConsole\PlaygroundConsole.csproj", "{00F37F32-4953-4DB8-B9D7-196E59DF8A95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{ADED57D5-FB6A-4C21-A303-FC4AD8FA4391}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADED57D5-FB6A-4C21-A303-FC4AD8FA4391}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADED57D5-FB6A-4C21-A303-FC4AD8FA4391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00F37F32-4953-4DB8-B9D7-196E59DF8A95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00F37F32-4953-4DB8-B9D7-196E59DF8A95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00F37F32-4953-4DB8-B9D7-196E59DF8A95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00F37F32-4953-4DB8-B9D7-196E59DF8A95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{B7A123F6-7B33-4861-BDE8-AF31E5471607} = {245D8C37-D641-43B3-82BC-2540DD5F5478}
 		{34D8C321-EFEC-4FFD-8052-D3AF9C32B1D6} = {245D8C37-D641-43B3-82BC-2540DD5F5478}
 		{ADED57D5-FB6A-4C21-A303-FC4AD8FA4391} = {245D8C37-D641-43B3-82BC-2540DD5F5478}
+		{00F37F32-4953-4DB8-B9D7-196E59DF8A95} = {245D8C37-D641-43B3-82BC-2540DD5F5478}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C4D8671-D53B-4F35-8626-E116FC73F85E}
