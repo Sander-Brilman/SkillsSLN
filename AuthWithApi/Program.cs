@@ -24,15 +24,7 @@ builder.Services.AddIdentity<ApiUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-builder.Services.AddAuthentication()
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuer = true,
-            // check gpt damn it im going to bed fuck this this
-        }
-    })
+builder.Services.AddAuthentication();
     
 
 

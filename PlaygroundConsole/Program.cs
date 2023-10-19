@@ -14,3 +14,4 @@ ClaimsIdentity identity = new ClaimsIdentity(claims, "qwdqw");
 Console.WriteLine(identity.IsAuthenticated);
 
 Console.ReadLine();
+ 
