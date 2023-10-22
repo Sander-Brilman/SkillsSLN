@@ -19,31 +19,26 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 
-
-builder.Services.AddIdentity<ApiUser, IdentityRole>()
+builder.Services.AddIdentityCore<ApiUser>()
+    .AddSignInManager<SignInManager<ApiUser>>()
+    .AddUserManager<UserManager<ApiUser>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();          
+    .AddDefaultTokenProviders();// has nothing to do with jwt btw
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = "your-issuer",
-            ValidAudience = "your-audience",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key"))
-        };
-    });
+
+//builder.Services.AddIdentity<ApiUser, IdentityRole>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>()
+//    .AddDefaultTokenProviders();          
+
+builder.Services.AddAuthentication()
+    .AddCookie(IdentityConstants.ApplicationScheme); 
+
 
 builder.Services.AddAuthorization();
 
 // Add services to the container.
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -77,4 +72,6 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-app.Run();
+
+
+await app.RunAsync();
