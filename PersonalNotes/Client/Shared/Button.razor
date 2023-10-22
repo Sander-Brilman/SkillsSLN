@@ -1,0 +1,28 @@
+﻿<button type="@Type" @onclick="OnClick" class="btn btn-@BsStyle @Class">
+    @if (Icon is not null)
+    {
+        <span class="oi oi-@Icon me-2" aria-hidden="true"></span>
+    }
+    @ChildContent
+</button>
+
+
+@code {
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    [Parameter]
+    public string BsStyle { get; set; } = "primary";
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Type { get; set; } = "button";
+}

@@ -1,0 +1,24 @@
+﻿<CustomDialog @bind-IsOpen:get="IsOpen" @bind-IsOpen:set="IsOpenChanged">
+    <h2 class="mb-3">@Text</h2>
+
+    <Button OnClick="OnNo" Icon="x" BsStyle="danger">No</Button>
+    <Button OnClick="OnYes" Icon="check" BsStyle="success">Yes</Button>
+</CustomDialog>
+
+
+@code {
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = "";
+
+    [Parameter]
+    public EventCallback OnYes { get; set; }
+
+    [Parameter]
+    public EventCallback OnNo { get; set; }
+}

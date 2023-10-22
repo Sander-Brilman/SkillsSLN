@@ -1,0 +1,58 @@
+﻿@page "/login";
+@inject CustomAuthenticationStateProvider _authProvider;
+@inject NavigationManager _navManager;
+
+<Title>Login</Title>
+
+<EditForm Model="loginDTO" OnValidSubmit="TryLogin" class="mb-2">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <label class="d-block mb-2">
+        Username:
+        <input @bind="loginDTO.UserName" class="form-control"/>
+    </label>
+
+    <label class="d-block mb-2">
+        Password:
+        <input type="password" @bind="loginDTO.Password" class="form-control" />
+    </label>
+
+    <div class="mb-2 d-block">
+        <div class="form-check form-switch">
+            <input class="form-check-input" @bind="loginDTO.IsPersistant" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+            <label class="form-check-label" for="flexSwitchCheckDefault">Blijf ingelogd</label>
+        </div>
+    </div>
+
+    <ul class="text-danger mb-2">
+        @foreach (string item in errorMessages)
+        {
+            <li>@item</li>
+        }
+    </ul>
+
+    <Button OnClick="_ => {}" Type="submit" Icon="check">Login</Button>
+</EditForm>
+
+<p>dont have an account? <a href="/register">register for 100% free</a></p>
+
+
+@code {
+    LoginDTO loginDTO = new();
+
+    List<string> errorMessages = new();
+
+    async Task TryLogin()
+    {
+        LoginResultDTO loginResult = await _authProvider.LoginAsync(loginDTO);
+
+        if (loginResult.Success)
+        {
+            _navManager.NavigateTo("/", true);
+            return;
+        }
+
+        errorMessages = loginResult.Message.Split(',').ToList();
+    }
+}

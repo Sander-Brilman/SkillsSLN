@@ -1,0 +1,34 @@
+﻿<EditForm Model="Journal" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <label class="mb-2 d-block">
+        title:
+        <input class="form-control" @bind="Journal.Title" />
+    </label>
+
+    <label class="mb-2 d-block">
+        Date:
+        <input class="form-control" @bind="Journal.Date" type="date" />
+    </label>
+
+    <label class="mb-2 d-block">
+        Content:
+        <textarea class="form-control" @bind="Journal.Content"></textarea>
+    </label>
+
+    <Button OnClick="_ => {}" Type="submit" BsStyle="success" Icon="check-circle">Save</Button>
+    <Button OnClick="OnCancel" BsStyle="secondary" Icon="x">Cancel</Button>
+</EditForm>
+
+
+@code {
+    [Parameter, EditorRequired]
+    public JournalDTO Journal { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnCancel { get; set; }
+}

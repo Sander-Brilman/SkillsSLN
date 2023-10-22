@@ -1,9 +1,97 @@
 ﻿@page "/"
+@inject CustomAuthenticationStateProvider _authProvider;
+@inject JournalRepository _journalRepo;
+@inject NavigationManager _navManager;
+@attribute [Authorize]
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (user is null || allJournalPreviews is null)
+{
+    <p>Loading.. please wait for me to finish allright? i need some time aswell just leave me alone</p>
 
-Welcome to your new app.
+} else
+{
+    <Title>Welcome @(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value)</Title>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    <hr class="mb-1" />
+
+    <div>
+        <h2 class="text-secondary mb-5 h3">Search</h2>
+
+        <EditForm Model="searchQuery" OnValidSubmit="OnSearch">
+
+            <label class="d-block mb-2">
+                Search for title:
+                <input @bind="searchQuery.TitleSearch" class="form-control">
+            </label>
+
+            <label class="d-block mb-2">
+                Search for date:
+                <input type="date" @bind="searchQuery.DateSearch" class="form-control">
+            </label>
+
+            <Button Type="submit" Icon="magnifying-glass" BsStyle="success">Search</Button>
+            <Button OnClick="ResetDisplayedResults" Icon="x" BsStyle="secondary">Clear</Button>
+        </EditForm>
+    </div>
+
+    <hr class="mb-3" />
+
+    <a href="/new" class="btn btn-primary mb-2"><span class="oi oi-plus"></span> Add journal</a>
+
+    <div class="d-flex flex-wrap">
+
+        @foreach (JournalPreviewDTO journal in displayedJournalPreviews)
+        {
+            <JournalPreviewCard journalPreview="journal" />
+        }
+
+    </div>
+
+}
+
+
+@code {
+    SearchModel searchQuery = new();
+
+    ClaimsPrincipal? user; 
+
+    List<JournalPreviewDTO>? allJournalPreviews;
+
+    List<JournalPreviewDTO> displayedJournalPreviews = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = (await _authProvider.GetAuthenticationStateAsync()).User;
+        allJournalPreviews = await _journalRepo.GetAllJournalsPreviewsAsync();
+        ResetDisplayedResults();
+    }
+
+    void OnSearch()
+    {
+        IQueryable<JournalPreviewDTO> filteredResults = allJournalPreviews.AsQueryable();
+
+        if (searchQuery.TitleSearch is not null)
+        {
+            filteredResults = filteredResults
+                .Where(j => j.Title.Trim().ToLower().Contains(searchQuery.TitleSearch.Trim().ToLower()));
+        }
+
+        if (searchQuery.DateSearch is not null)
+        {
+            filteredResults = filteredResults
+                .Where(j => j.Date == searchQuery.DateSearch);
+        }
+
+        displayedJournalPreviews = filteredResults.ToList();
+    }
+
+    void ResetDisplayedResults()
+    {
+        searchQuery.TitleSearch = null;
+        searchQuery.DateSearch = null;
+        displayedJournalPreviews = allJournalPreviews!;
+    }
+
+}

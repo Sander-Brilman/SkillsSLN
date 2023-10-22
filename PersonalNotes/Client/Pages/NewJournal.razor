@@ -1,0 +1,28 @@
+﻿@page "/new";
+@inject NavigationManager _navManager;
+@inject JournalRepository _journalRepo;
+@attribute [Authorize]
+
+<Title>New journal, your creative writing starts here!</Title>
+
+<JournalEditForm 
+    OnCancel="Cancel"
+    OnValidSubmit="OnSave"
+    Journal="newJournal"
+    />
+
+@code {
+    JournalDTO newJournal = new();
+
+    void Cancel()
+    {
+        _navManager.NavigateTo("/");
+    }
+
+    async Task OnSave()
+    {
+        var response = await _journalRepo.CreateNewJournalAsync(newJournal);
+
+        _navManager.NavigateTo("/journal/" + response.Id);
+    }
+}

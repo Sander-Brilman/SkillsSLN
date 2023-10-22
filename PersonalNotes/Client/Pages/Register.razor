@@ -1,0 +1,71 @@
+﻿@page "/register";
+@inject RegisterUserService _registerService;
+@inject NavigationManager _navManager;
+
+<Title>Register</Title>
+
+<EditForm Model="registerDTO" OnValidSubmit="TryRegister" class="mb-2">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <label class="d-block mb-2">
+        Username:
+        <input @bind="registerDTO.UserName" class="form-control" />
+    </label>
+
+    <label class="d-block mb-2">
+        Email:
+        <input type="email" @bind="registerDTO.Email" class="form-control" />
+    </label>
+
+    <label class="d-block mb-2">
+        Password:
+        <input type="password" @bind="registerDTO.Password" class="form-control" />
+    </label>
+
+    <label class="d-block mb-2">
+        Password Repeat:
+        <input type="password" @bind="passwordRepeated" class="form-control" />
+    </label>
+
+    <ul class="text-danger mb-2">
+        @foreach (string item in errorMessages)
+        {
+            <li>@item</li>
+        }
+    </ul>
+
+    <Button OnClick="_ => {}" Type="submit" Icon="check">Register</Button>
+</EditForm>
+
+<p>already have an account? <a href="/login">login.</a> now. i mean it. what are you still doing here? go login dammit</p>
+
+
+@code {
+    RegisterDTO registerDTO = new();
+
+    string passwordRepeated = "";
+
+    List<string> errorMessages = new();
+
+    async Task TryRegister()
+    {
+        errorMessages.Clear();
+
+        if (passwordRepeated != registerDTO.Password)
+        {
+            errorMessages.Add("passwords do not match, what a skill issue");
+            return;
+        }
+
+        RegisterResultDTO loginResult = await _registerService.RegisterUserAsync(registerDTO);
+
+        if (loginResult.Success)
+        {
+            _navManager.NavigateTo("/login");
+            return;
+        }
+
+        errorMessages = loginResult.Message.ToList();
+    }
+}

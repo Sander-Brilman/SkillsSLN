@@ -1,0 +1,89 @@
+﻿@page "/journal/{RawId}"
+@inject JournalRepository _journalRepo;
+@inject NavigationManager _navManager;
+@attribute [Authorize]
+
+@if (journal is null)
+{
+    <p>Loading..</p>
+}
+else
+{
+    <a href="/" class="mb-2">Back to home</a>
+    <h1 class="text-primary mb-1">[@journal.Date.ToShortDateString()] @journal.Title</h1>
+    <h2 class="text-secondary h3 mb-3">Last edited on: @journal.LastEditedAt</h2>
+
+    <div class="mb-4">
+        <Button OnClick="_ => isDeleteDialogOpen = !isDeleteDialogOpen" BsStyle="danger" Icon="trash">Delete</Button>
+        <Button OnClick="_ => isEditDialogOpen = !isEditDialogOpen" BsStyle="primary" Icon="pencil">Edit</Button>
+    </div>
+
+    <hr class="mb-2" />
+
+    <pre>@journal.Content</pre>
+
+
+
+    @* delete dialog *@
+    <YesNoDialog @bind-IsOpen="isDeleteDialogOpen"
+                 Text="Are you sure you want to delete this? gone is gone, poof. no comming back from."
+                 OnNo="_ => isDeleteDialogOpen = false"
+                 OnYes="DeleteThisJournal" />
+
+
+    @* edit dialog *@
+    <CustomDialog @bind-IsOpen="isEditDialogOpen">
+        <JournalEditForm Journal="journal"
+                         OnValidSubmit="UpdateThisJournal"
+                         OnCancel="_ => isEditDialogOpen = false" />
+    </CustomDialog>
+}
+
+
+
+
+@code {
+    [Parameter]
+    public string RawId { get; set; } = "";
+
+    int id;
+
+    JournalDTO? journal;
+
+
+    bool isDeleteDialogOpen = false;
+    bool isEditDialogOpen = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(RawId, out id) is false)
+        {
+            throw new InvalidOperationException("Journal id is not a number!");
+        }
+
+        journal = await _journalRepo.GetSingleJournal(id);
+    }
+
+    async Task DeleteThisJournal()
+    {
+        if (journal is null)
+        {
+            throw new InvalidOperationException("this area should not be possible to reach");
+        }
+
+        await _journalRepo.DeleteJournalAsync(journal.Id);
+
+        _navManager.NavigateTo("/");
+    }
+
+    async Task UpdateThisJournal()
+    {
+        if (journal is null)
+        {
+            throw new InvalidOperationException("this area should not be possible to reach");
+        }
+
+        await _journalRepo.UpdateJournalAsync(journal);
+    }
+
+}

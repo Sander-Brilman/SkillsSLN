@@ -1,0 +1,15 @@
+﻿<div class="card mx-2">
+    <div class="card-body">
+        <h5 class="card-title">[@journalPreview.Date.ToShortDateString()] @journalPreview.Title</h5>
+        <p class="card-text">
+            @journalPreview.ContentPreview
+        </p>
+        <a href="/journal/@journalPreview.Id" class="btn btn-primary"><span class="oi oi-eye"></span> View</a>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public JournalPreviewDTO journalPreview { get; set; }
+}
