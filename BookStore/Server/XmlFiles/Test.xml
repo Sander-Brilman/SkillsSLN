@@ -1,0 +1,30 @@
+﻿<books>
+	<book>
+		<id>1</id>
+		<title>The Great Book</title>
+		<description>A fascinating tale of adventure.</description>
+		<price>19.99</price>
+		<author>
+			<id>1</id>
+			<name>John Doe</name>
+		</author>
+		<category>
+			<id>1</id>
+			<title>Fiction</title>
+		</category>
+	</book>
+	<book>
+		<id>2</id>
+		<title>The Great Book revenge of the titan</title>
+		<description>A fascinating tale of revenge.</description>
+		<price>133.99</price>
+		<author>
+			<id>2</id>
+			<name>John Doe's son</name>
+		</author>
+		<category>
+			<id>2</id>
+			<title>Adventure</title>
+		</category>
+	</book>
+</books>

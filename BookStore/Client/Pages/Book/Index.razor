@@ -1,0 +1,36 @@
+﻿@page "/book"
+@inject BookRespository _bookRepo;
+
+<Title>Kies een boek:</Title>
+
+
+<a href="/book/new" class="btn btn-success mb-3">
+    <Icon IconName="plus"></Icon>
+    Boek toevoegen
+</a>
+
+@if (books is null)
+{
+    <h2 class="text-secondary">Aan het laden</h2>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var item in books)
+        {
+            <li class="list-group-item">
+                <a href="book/@item.Id">@item.Title</a>
+            </li>
+        }
+    </ul>
+}
+
+
+@code {
+    List<BookDTO>? books;
+
+    protected override async Task OnInitializedAsync()
+    {
+        books = await _bookRepo.GetAllAsync();
+    }
+}

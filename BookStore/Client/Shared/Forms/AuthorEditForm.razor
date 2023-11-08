@@ -1,0 +1,22 @@
+﻿
+<EditForm Model="Author" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <label class="d-block mb-2">
+        Naam
+        <input @bind="Author.Name" class="form-control" />
+    </label>
+
+    <button type="submit" class="btn btn-primary"><Icon IconName="check"></Icon> Save</button>
+</EditForm>
+
+
+
+@code {
+    [Parameter, EditorRequired]
+    public AuthorDTO Author { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnSubmit { get; set; }
+}

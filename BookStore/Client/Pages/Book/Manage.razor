@@ -1,0 +1,105 @@
+﻿@page "/book/{rawId}"
+
+@inject BookRespository _bookRepo;
+@inject CategoryRepository _categoryRepo;
+@inject AutherRepository _authorRepo;
+@inject NavigationManager _navManager;
+
+<Title>Boek @(book?.Title ?? "[..]")</Title>
+
+@if (isLoading)
+{
+    <h2>Aan het laden..</h2>
+}
+else
+{
+    <div class="mb-3">
+
+        <button @onclick="_ => isDeleteDialogOpen = true" class="btn btn-danger">
+            <Icon IconName="trash"></Icon>
+            Verwijderen
+        </button>
+        
+        <button @onclick="_ => isEditDialogOpen = true" class="btn btn-primary">
+            <Icon IconName="pencil"></Icon>
+            Aanpassen
+        </button>
+    </div>
+
+    <ul class="list-group">
+
+        <li class="list-group-item">
+            <strong class="d-block mb-1 fw-bold">Titel</strong>
+            @book.Title
+        </li>
+
+
+        <li class="list-group-item">
+            <strong class="d-block mb-1 fw-bold">Prijs</strong>
+            @book.Price
+        </li>
+
+        <li class="list-group-item">
+            <strong class="d-block mb-1 fw-bold">Schrijver</strong>
+            <a href="/author/@author.Id">@author.Name</a>
+        </li>
+        
+        <li class="list-group-item">
+            <strong class="d-block mb-1 fw-bold">Catagorie</strong>
+            <a href="/category/@category.Id">@category.Title</a>
+        </li>
+        
+        <li class="list-group-item">
+            <strong class="d-block mb-1 fw-bold">Beschrijving</strong>
+            <pre>
+                @book.Desctiption
+            </pre>
+        </li>
+    </ul>
+
+    <CustomDialog @bind-IsOpen="isDeleteDialogOpen">
+
+        <Title>Weet je zeker dat je dit wilt verwijderen?</Title>
+
+        <button class="btn-danger">
+
+        </button>
+
+    </CustomDialog>
+}
+@code {
+    [Parameter]
+    public string RawId { get; set; }
+
+    int id;
+
+    BookDTO? book;
+    AuthorDTO? author;
+    CategoryDTO? category;
+
+    bool isLoading => book == null || author == null || category == null;
+
+    bool isDeleteDialogOpen;
+    bool isEditDialogOpen;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        id = int.Parse(RawId);
+
+        book = await _bookRepo.GetSingleAsync(id);
+        author = await _authorRepo.GetSingleAsync(book.AuthorId);
+        category = await _categoryRepo.GetSingleAsync(book.CategoryId);
+    }
+
+    async Task UpdateBook()
+    {
+        await _bookRepo.UpdateAsync(book);
+        isEditDialogOpen = false;
+    }
+
+    async Task DeleteBook()
+    {
+        await _bookRepo.DeleteAsync(book);
+        _navManager.NavigateTo("/book");
+    }
+}

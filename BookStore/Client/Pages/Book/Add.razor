@@ -1,0 +1,19 @@
+﻿@page "/book/new"
+@inject BookRespository _bookRepo;
+@inject NavigationManager _navManager;
+
+<Title>Boek toevoegen</Title>
+
+<BookEditForm OnSubmit="SaveBook" Book="book"></BookEditForm>
+
+
+@code {
+    BookDTO book = new();
+
+    async Task SaveBook()
+    {
+        var newBook = await _bookRepo.CreateAsync(book);
+
+        _navManager.NavigateTo("/book/" + newBook.Id);
+    }
+}

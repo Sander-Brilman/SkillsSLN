@@ -1,0 +1,22 @@
+﻿
+<EditForm Model="Category" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <label class="d-block mb-2">
+        Titel
+        <input @bind="Category.Title" class="form-control" />
+    </label>
+
+    <button type="submit" class="btn btn-primary"><Icon IconName="check"></Icon> Save</button>
+</EditForm>
+
+
+
+@code {
+    [Parameter, EditorRequired]
+    public CategoryDTO Category { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnSubmit { get; set; }
+}

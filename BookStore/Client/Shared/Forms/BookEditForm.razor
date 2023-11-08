@@ -1,0 +1,73 @@
+﻿@inject CategoryRepository _categoryRepo;
+@inject AutherRepository _authorRepo;
+
+
+<EditForm Model="Book" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <label class="d-block mb-2">
+        Titel
+        <input @bind="Book.Title" class="form-control" />
+    </label>
+
+    <label class="d-block mb-2">
+        description
+        <textarea @bind="Book.Desctiption" class="form-control"></textarea>
+    </label>
+
+    <label class="d-block mb-2">
+        prijs
+        <input @bind="Book.Price" class="form-control" />
+    </label>
+
+    @if (authors is not null && categories is not null)
+    {
+        <p>Aan het laden..</p>
+    }
+    else
+    {
+        <label class="d-block mb-2">
+            Categorie
+            <select @bind="Book.CategoryId" class="form-control">
+                @foreach (var item in categories)
+                {
+                    <option value="@item.Id">@item.Title</option>
+                }
+            </select>
+        </label>
+
+        <label class="d-block mb-2">
+            Schrijver
+            <select @bind="Book.AuthorId" class="form-control">
+                @foreach (var item in authors)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </select>
+        </label>
+
+    }
+
+    <button type="submit" class="btn btn-primary"><Icon IconName="check"></Icon> Opslaan</button>
+</EditForm>
+
+
+
+@code {
+    [Parameter, EditorRequired]
+    public BookDTO Book { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnSubmit { get; set; }
+
+    List<AuthorDTO>? authors;
+
+    List<CategoryDTO>? categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        authors = await _authorRepo.GetAllAsync();
+        categories = await _categoryRepo.GetAllAsync();
+    }
+}
