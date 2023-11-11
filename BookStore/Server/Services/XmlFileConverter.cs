@@ -1,6 +1,10 @@
 ﻿using BookStore.Server.Data;
 using BookStore.Server.Data.XmlModels;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace BookStore.Server.Services;
@@ -27,27 +31,41 @@ public class XmlFileConverter
     /// <returns></returns>
     public async Task ImportXmlFileIntoDbAsync(string fileName)
     {
-        Stream xmlData = _xmlFileManager.GetXmlFileStream(fileName);
+        string xmlData = _xmlFileManager.GetXmlString(fileName);
 
-        var books = (BooksXmlRootObject?)_serializer.Deserialize(xmlData);
+        using TextReader reader = new StringReader(xmlData);
+
+        var books = (BooksXmlRootObject?)_serializer.Deserialize(reader);
+
+        List<Author> authors = books.book
+            .Select(b => new Author()
+            {
+                Id = 0,
+                Name = b.author.name,
+            })
+            .Distinct()
+            .ToList();
+
+
+        List<Category> catagories = books.book
+            .Select(b => new Category()
+            {
+                Id = 0,
+                Title = b.category.title,
+            })
+            .Distinct()
+            .ToList();
+
 
         List<Book> dbBooks = books.book
             .Select(b => new Book()
             {
-                Id = b.id,
+                Id = 0,
                 Desctiption = b.description,
                 Price = decimal.ToDouble(b.price),
                 Title = b.title,
-                Author = new Author()
-                {
-                    Id = b.author.id,
-                    Name = b.author.name,
-                },
-                Category = new Category()
-                {
-                    Id = b.category.id,
-                    Title = b.category.title,
-                }
+                Author = authors.Where(a => a.Name == b.author.name).First(),
+                Category = catagories.Where(c => c.Title == b.category.title).First(),
             })
             .ToList();
 
@@ -59,7 +77,7 @@ public class XmlFileConverter
     /// Exports all the contents of the database to a memory stream containing the data in xml format
     /// </summary>
     /// <returns>the stream containing the db content in xml format</returns>
-    public async Task<Stream> ExportDbtoXmlStreamAsync()
+    public async Task<string> ExportDbtoXmlStreamAsync()
     {
         List<Book> dbBooks = await _dbContext.Book
             .Include(b => b.Author)
@@ -89,10 +107,15 @@ public class XmlFileConverter
                 .ToArray()
         };
 
-        Stream xmlStream = new MemoryStream();
+        string xmlString = "";
 
-        _serializer.Serialize(xmlStream, xmlBooks);
+        using (var sww = new StringWriter())
+        {
+            using XmlWriter writer = XmlWriter.Create(sww);
+            _serializer.Serialize(writer, xmlBooks);
+            xmlString = sww.ToString(); // Your XML
+        }
 
-        return xmlStream;
+        return xmlString;
     } 
 }

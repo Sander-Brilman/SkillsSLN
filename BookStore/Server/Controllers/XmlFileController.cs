@@ -1,6 +1,7 @@
 ﻿using BookStore.Server.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace BookStore.Server.Controllers;
 [Route("api/[controller]")]
@@ -10,9 +11,10 @@ public class XmlFileController : ControllerBase
     private readonly XmlFileConverter _xmlFileConverter;
     private readonly XmlFileManager _xmlFileManager;
 
-    public XmlFileController(XmlFileConverter xmlFileConverter)
+    public XmlFileController(XmlFileConverter xmlFileConverter, XmlFileManager xmlFileManager)
     {
         _xmlFileConverter = xmlFileConverter;
+        _xmlFileManager = xmlFileManager;
     }
 
 
@@ -22,11 +24,13 @@ public class XmlFileController : ControllerBase
     /// <param name="xmlFile">the xml file</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task Import([FromForm] IFormFile xmlFile)
+    public async Task<IActionResult> Import([FromForm] IFormFile xmlFile)
     {
         string fileName = await _xmlFileManager.UploadXmlFileAsync(xmlFile.OpenReadStream());
 
         await _xmlFileConverter.ImportXmlFileIntoDbAsync(fileName);
+
+        return Redirect("/import-export");
     }
 
     /// <summary>
@@ -36,8 +40,15 @@ public class XmlFileController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> Export()
     {
-        Stream xmlStream = await _xmlFileConverter.ExportDbtoXmlStreamAsync();
+        try
+        {
+            string xmlText = await _xmlFileConverter.ExportDbtoXmlStreamAsync();
 
-        return File(xmlStream, "application/xml", "Export.xml");
+            return File(Encoding.UTF8.GetBytes(xmlText), "application/xml", "Export.xml");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest();
+        }
     }
 }

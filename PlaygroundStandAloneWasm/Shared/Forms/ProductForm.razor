@@ -1,0 +1,45 @@
+﻿<CustomDialog @bind-IsOpen:get="IsOpen" @bind-IsOpen:set="IsOpenChanged">
+
+    <EditForm Model="PassedProduct" OnValidSubmit="OnSave">
+
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+
+        <label class="d-block mb-2">
+            Titel:
+            <input class="form-control" @bind="PassedProduct.Title">
+        </label>
+
+        <label class="d-block mb-2">
+            Description:
+            <textarea class="form-control" @bind="PassedProduct.Description"></textarea>
+        </label>
+
+        <button type="submit" class="btn btn-primary">
+            <Icon Type="check"></Icon>
+            Save
+        </button>
+
+        <button type="button" @onclick="async _ => IsOpen = false" class="btn btn-secondary">
+            <Icon Type="x"></Icon>
+            Sluiten
+        </button>
+    </EditForm>
+
+</CustomDialog>
+
+
+
+@code {
+    [Parameter]
+    public Product PassedProduct { get; set; }
+
+    [Parameter]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsOpenChanged { get; set; }
+}

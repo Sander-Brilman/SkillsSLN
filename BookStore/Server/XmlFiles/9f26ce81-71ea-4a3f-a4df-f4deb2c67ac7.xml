@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-16"?>
+<BooksXmlRootObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <book>
+        <id>5</id>
+        <title>Jack reacher 2</title>
+        <description>Back from the dead </description>
+        <price>69.2</price>
+        <author>
+            <id>2</id>
+            <name>Lee child</name>
+        </author>
+        <category>
+            <id>1</id>
+            <title>Thriller</title>
+        </category>
+    </book>
+</BooksXmlRootObject>

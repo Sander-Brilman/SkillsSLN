@@ -21,9 +21,15 @@
         <input @bind="Book.Price" class="form-control" />
     </label>
 
-    @if (authors is not null && categories is not null)
+    @if (authors is null || categories is null)
     {
         <p>Aan het laden..</p>
+    }
+    else if (authors.Count == 0 || categories.Count == 0)
+    {
+        <div role="alert" class="alert alert-danger">
+            Je moet eerst minimaal 1 <a href="/catagory">catagorie</a> en <a href="/author">Schrijver</a> hebben!
+        </div>
     }
     else
     {
@@ -47,9 +53,9 @@
             </select>
         </label>
 
+        <button type="submit" class="btn btn-primary"><Icon IconName="check"></Icon> Opslaan</button>
     }
 
-    <button type="submit" class="btn btn-primary"><Icon IconName="check"></Icon> Opslaan</button>
 </EditForm>
 
 
@@ -69,5 +75,15 @@
     {
         authors = await _authorRepo.GetAllAsync();
         categories = await _categoryRepo.GetAllAsync();
+
+        if (Book.AuthorId == 0 && authors.Count > 0)
+        {
+            Book.AuthorId = authors.First().Id;
+        }
+
+        if (Book.CategoryId == 0 && categories.Count > 0)
+        {
+            Book.CategoryId = categories.First().Id;
+        }
     }
 }

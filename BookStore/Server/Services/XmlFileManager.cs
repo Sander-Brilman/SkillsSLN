@@ -26,14 +26,14 @@ public class XmlFileManager
 
 
     /// <summary>
-    /// Gets a stream containing the xml file contents of the specified file
+    /// Gets a string containing the xml file contents of the specified file
     /// </summary>
     /// <param name="fileName">the filename of the file inside the XmlFiles directory</param>
-    /// <returns>the stream containing all the data</returns>
-    public Stream GetXmlFileStream(string fileName)
+    /// <returns>the string containing all the data</returns>
+    public string GetXmlString(string fileName)
     {
         string fullPath = Path.Combine(_xmlFolderPath, fileName);
 
-        return File.OpenRead(fullPath);
+        return File.ReadAllText(fullPath);
     }
 }

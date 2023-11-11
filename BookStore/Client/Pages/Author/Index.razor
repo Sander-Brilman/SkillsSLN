@@ -1,5 +1,63 @@
-﻿<h3>Index</h3>
+﻿@page "/author"
+@inject AutherRepository _authorRepo;
+
+
+@if (authors is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <Title>Schrijvers:</Title>
+
+    <button class="btn btn-success mb-3" @onclick="_ => isCreateFormOpen = true">
+        <Icon IconName="plus"></Icon>
+        Toevoegen
+    </button>
+
+    <ul class="list-group">
+        @foreach (var item in authors)
+        {
+            <li class="list-group-item">
+                <a href="/author/@item.Id">@item.Name</a>
+            </li>
+        }
+    </ul>
+
+
+    <CustomDialog @bind-IsOpen="isCreateFormOpen">
+
+        <Title>Schrijver toevoegen</Title>
+
+        <AuthorEditForm Author="newAuthor" OnSubmit="CreateAuthor"></AuthorEditForm>
+
+        <button class="btn btn-secondary" @onclick="_ => isCreateFormOpen = false">
+            <Icon IconName="x"></Icon>
+            Sluiten
+        </button>
+    </CustomDialog>
+}
+
+
 
 @code {
+    List<AuthorDTO>? authors;
+
+    AuthorDTO newAuthor = new();
+
+    bool isCreateFormOpen = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        authors = await _authorRepo.GetAllAsync();
+    }
+
+    async Task CreateAuthor()
+    {
+        authors!.Add(await _authorRepo.CreateAuthorAsync(newAuthor));
+
+        newAuthor = new();
+        isCreateFormOpen = false;
+    }
 
 }

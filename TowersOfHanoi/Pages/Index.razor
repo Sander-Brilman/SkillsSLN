@@ -1,0 +1,29 @@
+﻿@page "/"
+@inject NavigationManager _navManager;
+
+<PageTitle>Index</PageTitle>
+
+
+
+<form action="play" enctype="application/x-www-form-urlencoded">
+
+    <label class="d-block mb-2">
+        Stapels:
+        <input type="number" value="8" name="Discs" class="form-control" min="0" max="100" />
+    </label>
+
+    <label class="d-block mb-2">
+        Torens:
+        <input type="number" value="3" name="Towers" class="form-control" min="3" max="5" />
+    </label>
+
+    <button class="btn btn-success" type="submit">
+        <span class="oi oi-circle-check"></span>
+        Start!
+    </button>
+
+</form>
+
+
+@code {
+}

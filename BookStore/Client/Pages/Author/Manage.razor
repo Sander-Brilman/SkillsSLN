@@ -1,5 +1,102 @@
-﻿<h3>Manage</h3>
+﻿@page "/author/{RawId}"
+@inject AutherRepository _authorRepo;
+@inject BookRespository _bookRepo;
+@inject NavigationManager _navManager;
+
+@if (isLoading)
+{
+    <Loading></Loading>
+}
+else
+{
+    <Title>Schrijver @author!.Name</Title>
+
+    <div class="mb-3">
+        <button class="btn btn-outline-danger" @onclick="_ => showDeleteDialog = true">
+            <Icon IconName="trash"></Icon>
+            Verwijderen
+        </button>
+
+        <button class="btn btn-primary" @onclick="_ => showEditDialog = true">
+            <Icon IconName="pencil"></Icon>
+            Aanpassen
+        </button>
+    </div>
+
+    <h2>Deze schrijven heeft @booksFromAuthor!.Count boeken</h2>
+
+    <ul class="list-group">
+        @foreach (var item in booksFromAuthor)
+        {
+            <li class="list-group-item">
+                <a href="/book/@item.Id">@item.Title</a>
+            </li>
+        }
+    </ul>
+
+    <CustomDialog @bind-IsOpen="showEditDialog">
+        <Title>schrijver aanpassen:</Title>
+
+        <AuthorEditForm OnSubmit="EditAuthorAsync" Author="author"></AuthorEditForm>
+
+        <button class="btn btn-secondary" @onclick="_ => showEditDialog = false">
+            <Icon IconName="x"></Icon>
+            Sluiten
+        </button>
+
+    </CustomDialog>
+
+    <CustomDialog @bind-IsOpen="showDeleteDialog">
+        <Title>Weet je zeker dat je dit wilt verwijderen?</Title>
+        <button class="btn-danger btn" @onclick="DeleteAuthorAsync">
+            <Icon IconName="trash"></Icon>
+            Ja
+        </button>
+        <buttton class="btn btn-secondary" @onclick="_ => showDeleteDialog = false">
+            <Icon IconName="x"></Icon>
+            Nee
+        </buttton>
+    </CustomDialog>
+
+
+}
+
 
 @code {
+    [Parameter]
+    public string RawId { get; set; } = "";
+
+    int id;
+
+    AuthorDTO? author;
+
+    List<BookDTO>? booksFromAuthor;
+
+    bool isLoading => author is null || booksFromAuthor is null;
+
+    bool showDeleteDialog = false;
+    bool showEditDialog = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        id = int.Parse(RawId);
+
+        author = await _authorRepo.GetSingleAsync(id);
+        booksFromAuthor = await _bookRepo.GetAllFromAuthorAsync(id);
+    }
+
+    async Task DeleteAuthorAsync()
+    {
+        await _authorRepo.DeleteAsync(author!);
+
+        _navManager.NavigateTo("/author");
+    }
+
+    async Task EditAuthorAsync()
+    {
+        await _authorRepo.UpdateAsync(author!);
+
+        showEditDialog = false;
+    }
 
 }

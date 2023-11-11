@@ -1,0 +1,43 @@
+﻿.towers {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: auto;
+}
+
+    .towers > .tower {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 100px;
+        padding: 20px;
+        background: lightcoral;
+        border: solid 2px black;
+    }
+
+    .towers ul {
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        flex-grow: 1;
+        padding: 0;
+    }
+
+    .towers ul li {
+        width: 100px;
+        height: 100px;
+        border: black solid 2px;
+        display: grid;
+        place-items: center;
+    }
+
+        .towers ul li button {
+            width: 100%;
+            height: 100%;
+        }
+
+        .towers ul li.selected {
+            border-color: red;
+        }

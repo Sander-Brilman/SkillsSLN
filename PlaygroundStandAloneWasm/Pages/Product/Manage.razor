@@ -1,0 +1,103 @@
+﻿@page "/product/{RawId:int}"
+@inject ProductRepository _productRepo;
+@inject NavigationManager _navManager;
+
+<h1 class="mb-3">Product bekijken</h1>
+
+@if (product is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <div class="mb-3">
+        <button class="btn btn-danger" @onclick="_ => showDelete = true">
+            <Icon Type="trash"></Icon>
+            Delete
+        </button>
+
+        <button class="btn btn-primary" @onclick="_ => showEditForm = true">
+            <Icon Type="pencil"></Icon>
+            Edit
+        </button>
+    </div>
+
+
+    <ul class="list-group">
+
+        <li class="list-group-item">
+            <strong class="fw-bold d-block mb-2">
+                Title
+            </strong>
+            @product.Title
+        </li>
+
+        <li class="list-group-item">
+            <strong class="fw-bold d-block mb-2">
+                Description
+            </strong>
+            <pre>
+                @product.Description
+            </pre>
+        </li>
+
+    </ul>
+
+
+    <ProductForm @bind-IsOpen="showEditForm" PassedProduct="product" OnSave="UpdateAsync"></ProductForm>
+
+    <CustomDialog @bind-IsOpen="showDelete">
+        <h2>Weet je zeker dat je dit wilt verwijderen?</h2>
+
+        <button class="btn btn-danger" @onclick="DeleteAsync">
+            <Icon Type="trash"></Icon>
+            Ja
+        </button>
+
+        <button class="btn btn-secondary" @onclick="_ => showDelete = false">
+            <Icon Type="x"></Icon>
+            Nee
+        </button>
+
+    </CustomDialog>
+}
+
+
+@code {
+    [Parameter]
+    public int RawId { get; set; }
+
+    Product? product;
+
+    bool showDelete;
+
+    bool showEditForm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await _productRepo.GetSingleAsync(RawId);
+    }
+
+
+    /// <summary>
+    /// Update the product
+    /// </summary>
+    /// <returns></returns>
+    async Task UpdateAsync()
+    {
+        await _productRepo.UpdateAsync(product!);
+        showEditForm = false;
+    }
+
+    /// <summary>
+    /// Deletes the current product and redirects to index
+    /// </summary>
+    /// <returns></returns>
+    async Task DeleteAsync()
+    {
+        await _productRepo.DeleteAsync(product!);
+        _navManager.NavigateTo("/product");
+    }
+
+
+}

@@ -1,5 +1,98 @@
-﻿<h3>Manage</h3>
+﻿@page "/category/{rawId}"
+@inject CategoryRepository _categoryRepo;
+@inject BookRespository _bookRepo;
+@inject NavigationManager _navManager;
+
+@if (isLoading)
+{
+    <Loading></Loading>
+}
+else
+{
+    <Title>Categorie @category.Title</Title>
+
+    <div class="mb-3">
+        <button class="btn btn-outline-danger" @onclick="_ => isDeleteDialogOpen = true">
+            <Icon IconName="trash"></Icon>
+            Verwijderen
+        </button>
+
+        <button class="btn btn-outline-primary" @onclick="_ => isEditDialogOpen = true">
+            <Icon IconName="pencil"></Icon>
+            Aanpassen
+        </button>
+    </div>
+
+    <h2 class="mb-2 text-secondary">@booksInCategory.Count boeken in deze catagorie</h2>
+
+    <ul class="list-group">
+        @foreach (var item in booksInCategory)
+        {
+            <li class="list-group-item">
+                <a href="/book/@item.Id">@item.Title</a>
+            </li>
+        }
+    </ul>
+
+    <CustomDialog @bind-IsOpen="isEditDialogOpen">
+        <Title>Categorie aanpassen:</Title>
+
+        <CategoryEditForm OnSubmit="EditCatagory" Category="category"></CategoryEditForm>
+
+        <button class="btn btn-secondary" @onclick="_ => isEditDialogOpen = false">
+            <Icon IconName="x"></Icon>
+            Sluiten
+        </button>
+
+    </CustomDialog>
+
+    <CustomDialog @bind-IsOpen="isDeleteDialogOpen">
+        <Title>Weet je zeker dat je dit wilt verwijderen?</Title>
+        <button class="btn-danger btn" @onclick="DeleteCategory">
+            <Icon IconName="trash"></Icon>
+            Ja
+        </button>
+        <buttton class="btn btn-secondary" @onclick="_ => isDeleteDialogOpen = false">
+            <Icon IconName="x"></Icon>
+            Nee
+        </buttton>
+    </CustomDialog>
+}
 
 @code {
+    [Parameter]
+    public string RawId { get; set; }
 
+    int id;
+
+    CategoryDTO? category;
+
+    List<BookDTO>? booksInCategory;
+
+    bool isLoading => category is null || booksInCategory is null;
+
+    bool isEditDialogOpen = false;
+
+    bool isDeleteDialogOpen = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        id = int.Parse(RawId);
+
+        category = await _categoryRepo.GetSingleAsync(id);
+
+        booksInCategory = await _bookRepo.GetAllInCategoryAsync(id);
+    }
+
+    async Task EditCatagory()
+    {
+        await _categoryRepo.UpdateAsync(category!);
+        isEditDialogOpen = false;
+    }
+
+    async Task DeleteCategory()
+    {
+        await _categoryRepo.DeleteAsync(category!);
+        _navManager.NavigateTo("/catagory");
+    }
 }

@@ -32,7 +32,7 @@ public class AutherRepository
     /// <exception cref="InvalidProgramException">api did not the requested author</exception>
     public async Task<AuthorDTO> GetSingleAsync(int id)
     {
-        return await _httpClient.GetFromJsonAsync<AuthorDTO>("/api/author" + id)
+        return await _httpClient.GetFromJsonAsync<AuthorDTO>("/api/author/" + id)
             ?? throw new InvalidProgramException("api did not the requested author");
 
     }

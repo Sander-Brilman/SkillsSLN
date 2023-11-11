@@ -1,0 +1,113 @@
+﻿@page "/play"
+
+
+
+@if (message is not null)
+{
+    <div class="alert alert-info mb-3">
+        @message
+    </div>
+}
+
+<div class="towers">
+
+    @foreach ((Stack<int> stacks, int index) tower in towers.Select((t, i) => (t, i)))
+    {
+        <div class="tower">
+                <button @onclick="_ => DropOnTower(tower.index)" class="btn btn-primary d-block mb-2">
+                    Droppen:
+                </button>
+
+            <ul>
+                @foreach (var stack in tower.stacks)
+                {
+                    <li class="@(selecedDisc == stack ? "selected" : "")">
+                        <button @onclick="_ => SelectDisc(tower.index, stack)">
+                            @stack
+                        </button>
+                    </li>
+                }
+            </ul>
+
+        </div>
+    }
+
+</div>
+
+
+@code {
+
+    [Parameter, SupplyParameterFromQuery]
+    public int Discs { get; set; }
+
+    [Parameter, SupplyParameterFromQuery]
+    public int Towers { get; set; }
+
+    int baseValue;
+
+    string? message;
+
+    List<Stack<int>> towers = new();
+
+
+    int? towerOfSelectedDisc;
+    int? selecedDisc;
+
+
+    protected override void OnInitialized()
+    {
+        towers = Enumerable.Range(0, Towers)
+            .Select(i => new Stack<int>())
+            .ToList();
+
+        for (int i = 0; i < Discs; i++)
+        {
+            towers[0].Push(Discs - i);
+        }
+
+        baseValue = Discs + 1;
+    }
+
+    void SelectDisc(int towerIndex, int stack)
+    {
+        if (towers[towerIndex].Peek() != stack)
+        {
+            message = "Kan alleen de bovenste van de stapel verwijderen!";
+            return;
+        }
+
+
+        message = $"Schijf {stack} geselecteerd!";
+
+        selecedDisc = stack;
+        towerOfSelectedDisc = towerIndex;
+    }
+
+    void DropOnTower(int tower)
+    {
+        if (selecedDisc is null || towerOfSelectedDisc is null)
+        {
+            message = "Je hebt nog geen schijf geselecteerd!";
+            return;
+        }
+
+        Stack<int> fromStack = towers[towerOfSelectedDisc.Value];
+        Stack<int> toStack = towers[tower];
+
+        int highestValueOnStack = toStack.TryPeek(out int result) ? result : baseValue;
+
+        if (highestValueOnStack < selecedDisc)
+        {
+            message = "Schijf mag alleen rusten op schijven groter dan zichzelf!";
+            return;
+        }
+
+        fromStack.Pop();
+        toStack.Push(selecedDisc.Value);
+
+        towerOfSelectedDisc = null;
+        selecedDisc = null;
+
+        StateHasChanged();
+    }
+}

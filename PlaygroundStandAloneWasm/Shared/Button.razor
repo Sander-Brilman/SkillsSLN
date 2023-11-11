@@ -1,0 +1,19 @@
+﻿<button class="btn btn-@Theme">
+    @if (Icon is not null)
+    {
+        <span class="oi oi-@Icon"></span>
+    }
+    @ChildContent
+</button>
+
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Theme { get; set; } = "primary";
+
+    [Parameter]
+    public string? Icon { get; set; }
+}

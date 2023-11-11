@@ -4,17 +4,20 @@
 <Title>Kies een boek:</Title>
 
 
-<a href="/book/new" class="btn btn-success mb-3">
-    <Icon IconName="plus"></Icon>
-    Boek toevoegen
-</a>
+
 
 @if (books is null)
 {
-    <h2 class="text-secondary">Aan het laden</h2>
+    <Loading></Loading>
+    return;
 }
 else
 {
+    <button class="btn btn-success mb-3" @onclick="_ => isCreateDialogOpen = true">
+        <Icon IconName="plus"></Icon>
+        Boek toevoegen
+    </button>
+
     <ul class="list-group">
         @foreach (var item in books)
         {
@@ -23,14 +26,42 @@ else
             </li>
         }
     </ul>
+
+    <CustomDialog @bind-IsOpen="isCreateDialogOpen">
+
+        <Title>Boek toevoegen</Title>
+
+        <BookEditForm Book="newBook" OnSubmit="CreateBook"></BookEditForm>
+
+        <button class="btn btn-secondary" @onclick="_ => isCreateDialogOpen = false">
+            <Icon IconName="x"></Icon>
+            Sluiten
+        </button>
+
+    </CustomDialog>
 }
 
 
 @code {
     List<BookDTO>? books;
 
+    BookDTO newBook = new();
+
+    bool isCreateDialogOpen;
+
     protected override async Task OnInitializedAsync()
     {
         books = await _bookRepo.GetAllAsync();
+    }
+
+    async Task CreateBook()
+    {
+        var addedBook = await _bookRepo.CreateAsync(newBook);
+
+        books!.Add(addedBook);
+
+        newBook = new();
+
+        isCreateDialogOpen = false;
     }
 }

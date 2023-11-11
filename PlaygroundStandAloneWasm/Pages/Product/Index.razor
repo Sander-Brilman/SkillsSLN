@@ -1,0 +1,63 @@
+﻿@page "/product"
+@inject ProductRepository _productRepo;
+
+
+<h1 class="mb-3">Lijst:</h1>
+
+
+@if (products is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <button class="btn btn-success mb-3" @onclick="_ => showCreateForm = true">
+        <Icon Type="plus"></Icon>
+        Toevoegen
+    </button>
+
+    <ul class="list-group mb-3">
+        @foreach (var item in products)
+        {
+            <li class="list-group-item"><a href="/product/@item.Id">@item.Title</a></li>
+        }
+    </ul>
+
+    <ProductForm @bind-IsOpen="showCreateForm" PassedProduct="newProduct" OnSave="SaveAsync"></ProductForm>
+}
+
+
+@code {
+    List<Product>? products;
+
+    Product newProduct = new();
+
+    bool showCreateForm = false;
+
+
+    string text = "text before";
+    void SetText()
+    {
+        text = "text after";
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await _productRepo.GetAllAsync();
+
+        if (products is null)
+        {
+            products = new();
+        }
+    }
+
+    async Task SaveAsync()
+    {
+        products!.Add(await _productRepo.CreateAsync(newProduct));
+
+        showCreateForm = false;
+        newProduct = new();
+    }
+
+}

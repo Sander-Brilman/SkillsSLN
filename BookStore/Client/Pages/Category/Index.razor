@@ -1,5 +1,62 @@
-﻿<h3>Index</h3>
+﻿@page "/category"
+@inject CategoryRepository _categoryRepo;
+
+<Title>Categorieen:</Title>
+
+@if (categories is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <button class="bnt btn-success mb-3" @onclick="_ => isCreateDialogOpen = true">
+        <Icon IconName="plus"></Icon>
+        Toevoegen
+    </button>
+
+    <ul class="list-group">
+        @foreach (var item in categories)
+        {
+            <li class="list-group-item">
+                <a href="/category/@item.Id">@item.Title</a>
+            </li>
+        }
+    </ul>
+
+    <CustomDialog @bind-IsOpen="isCreateDialogOpen">
+
+        <Title>Nieuwe categorie:</Title>
+
+        <CategoryEditForm Category="newCategory" OnSubmit="CreateCategory"></CategoryEditForm>
+
+        <button class="btn btn-secondary" @onclick="_ => isCreateDialogOpen = false">
+            <Icon  IconName="x"></Icon>
+            Sluiten
+        </button>
+
+    </CustomDialog>
+
+}
 
 @code {
+    List<CategoryDTO>? categories;
 
+    CategoryDTO newCategory = new();
+
+    bool isCreateDialogOpen = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await _categoryRepo.GetAllAsync();
+    }
+
+    async Task CreateCategory()
+    {
+        var addedCategory = await _categoryRepo.CreateNewAsync(newCategory);
+
+        categories!.Add(addedCategory);
+
+        newCategory = new();
+        isCreateDialogOpen = false;
+    }
 }

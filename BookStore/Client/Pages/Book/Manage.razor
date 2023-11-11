@@ -9,7 +9,7 @@
 
 @if (isLoading)
 {
-    <h2>Aan het laden..</h2>
+    <Loading></Loading>
 }
 else
 {
@@ -58,13 +58,26 @@ else
     </ul>
 
     <CustomDialog @bind-IsOpen="isDeleteDialogOpen">
-
         <Title>Weet je zeker dat je dit wilt verwijderen?</Title>
-
-        <button class="btn-danger">
-
+        <button class="btn-danger btn" @onclick="DeleteBook">
+            <Icon IconName="trash"></Icon>
+            Ja
         </button>
+        <buttton class="btn btn-secondary" @onclick="_ => isDeleteDialogOpen = false">
+            <Icon IconName="x"></Icon>
+            Nee
+        </buttton>
+    </CustomDialog>
 
+    <CustomDialog @bind-IsOpen="isEditDialogOpen">
+        <Title>Boek aanpassen</Title>
+
+        <BookEditForm Book="book" OnSubmit="UpdateBook"></BookEditForm>
+
+        <buttton class="btn btn-secondary" @onclick="_ => isEditDialogOpen = false">
+            <Icon IconName="x"></Icon>
+            sluiten
+        </buttton>
     </CustomDialog>
 }
 @code {

@@ -1,6 +1,18 @@
 ﻿@page "/import-export"
 
+<form class="mb-3" action="/api/XmlFile" method="post" enctype="multipart/form-data">
+    <label>
+        xmlFile:
+        <input required class="form-control" name="xmlFile" type="file" />
+    </label>
 
-@code {
+    <button class="btn btn-success" type="submit">
+        <Icon IconName="data-transfer-upload"></Icon>
+        Upload Xml File
+    </button>
+</form>
 
-}
+
+<a href="/api/XmlFile" download class="btn btn-success">Exporteer</a>   
+
+
