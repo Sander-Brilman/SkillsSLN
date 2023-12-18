@@ -44,23 +44,18 @@ else
 }
 
 
-<ProductEditFormDialog @bind-Show="showCreateProductDialog" Model="product" OnSubmit="AddProductToList">
-
-</ProductEditFormDialog>
+<ProductEditFormDialog @bind-Show="showCreateProductDialog" OnSubmit="AddProductToList"></ProductEditFormDialog>
 
 
 @code {
     List<Product>? products;
 
-    Product product = new();
-
     /// <summary>
     /// Adds the newly created product to the list and resets the product field to a new empty product
     /// </summary>
-    void AddProductToList()
+    void AddProductToList(Product newProduct)
     {
-        products!.Add(product);
-        product = new();
+        products!.Add(newProduct);
     }
 
     protected override async Task OnInitializedAsync()

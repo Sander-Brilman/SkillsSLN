@@ -1,4 +1,4 @@
-﻿@page "/play"
+﻿@page "/{Lang}/play"
 
 
 
@@ -36,12 +36,14 @@
 
 
 @code {
+    [Parameter]
+    public string Lang { get; set; } = "nl";
 
     [Parameter, SupplyParameterFromQuery]
     public int Discs { get; set; }
 
     [Parameter, SupplyParameterFromQuery]
-    public int Towers { get; set; }
+    public int Towers { get; set; } = 3;
 
     int baseValue;
 

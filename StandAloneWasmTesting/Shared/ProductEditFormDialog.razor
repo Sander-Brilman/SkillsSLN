@@ -36,8 +36,18 @@
     [Parameter]
     public EventCallback<bool> ShowChanged { get; set; }
 
+    Product model = new();
+
+    /// <summary>
+    /// The Product with the default values for the form. 
+    /// object will be cloned to prevent mutating the original
+    /// </summary>
     [Parameter]
-    public Product Model { get; set; }
+    public Product Model
+    {
+        get => model;
+        set => model = (Product)value.Clone();
+    }
 
     [Parameter]
     public EventCallback<Product> OnSubmit { get; set; }

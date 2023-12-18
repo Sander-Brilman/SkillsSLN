@@ -2,8 +2,13 @@
 
 namespace StandAloneWasmTesting.Models;
 
-public class Product
+public class Product : ICloneable
 {
+    public object Clone()
+    {
+        return MemberwiseClone();
+    }
+
     public int Id { get; set; }
 
     [Required(ErrorMessage = "Titel is verplicht")]

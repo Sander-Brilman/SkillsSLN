@@ -1,22 +1,50 @@
-﻿using StandAloneWasmTesting.Models;
+﻿using Blazored.LocalStorage;
+using StandAloneWasmTesting.Models;
 
 namespace StandAloneWasmTesting.Services;
 
-public class ProductRepository
+public class ProductRepository(ILocalStorageService localStorage)
 {
+    private readonly ILocalStorageService _localStorage = localStorage;
+
+    /// <summary>
+    /// Localstorage key used for storing all the products in the browsers local storage
+    /// </summary>
+    private const string _productLocalStorageKey = "Products";
+
     /// <summary>
     /// In-memory cache of the products
     /// </summary>
-    private readonly List<Product> _products = [
-        new Product()
+    private List<Product>? _products;
+
+    /// <summary>
+    /// Fetched the products from local storage if not done before
+    /// </summary>
+    /// <returns></returns>
+    private async Task EnsureProductsAreLoaded()
+    {
+        if (_products is not null)
         {
-            Title = "Asp.net Licence",
-            Description = "Build great websites with C# and blazor!",
-            Price = 10,
-            Stock = 69,
-            ImageUrl = "/favicon.png"
+            return;
         }
-    ];
+
+        if (await _localStorage.ContainKeyAsync(_productLocalStorageKey) is false)
+        {
+            _products = [];
+            return;
+        }
+
+        _products = await _localStorage.GetItemAsync<List<Product>>(_productLocalStorageKey);
+    }
+
+    /// <summary>
+    /// Saved the in-memory list of products to the local storage
+    /// </summary>
+    /// <returns></returns>
+    private async Task SaveListToLocalStorage()
+    {
+        await _localStorage.SetItemAsync(_productLocalStorageKey, _products);
+    }
 
     /// <summary>
     /// Gets and returns all the products.
@@ -24,7 +52,8 @@ public class ProductRepository
     /// <returns></returns>
     public async Task<List<Product>> GetAllProductsAsync()
     {
-        return _products;
+        await EnsureProductsAreLoaded();
+        return _products!;
     }
 
     /// <summary>
@@ -34,7 +63,8 @@ public class ProductRepository
     /// <returns>The product if it exists. null if it does not</returns>
     public async Task<Product?> GetSingleProduct(int id)
     {
-        return _products.FirstOrDefault(p => p.Id == id);
+        await EnsureProductsAreLoaded();
+        return _products!.FirstOrDefault(p => p.Id == id);
     }
 
     /// <summary>
@@ -44,7 +74,14 @@ public class ProductRepository
     /// <returns></returns>
     public async Task UpdateProduct(Product product)
     {
+        await EnsureProductsAreLoaded();
+        int index = _products!.FindIndex(p => p.Id == product.Id);
 
+        if (index == -1) { return; }
+
+        _products[index] = product;
+
+        await SaveListToLocalStorage();
     }
 
     /// <summary>
@@ -54,6 +91,8 @@ public class ProductRepository
     /// <returns></returns>
     public async Task DeleteProduct(Product product)
     {
-        _products.Remove(product);
+        await EnsureProductsAreLoaded();
+        _products!.Remove(_products.FirstOrDefault(p => p.Id == product.Id));
+        await SaveListToLocalStorage();
     }
 }

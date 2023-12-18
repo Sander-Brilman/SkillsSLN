@@ -1,29 +1,29 @@
-﻿@page "/"
+﻿@page "/{Lang}"
 @inject NavigationManager _navManager;
 
 <PageTitle>Index</PageTitle>
 
 
+<label class="d-block mb-2">
+    @(Lang == "nl" ? "schijven" : "discs"):
+    <input type="number" @bind="discs" class="form-control" min="1" max="100" />
+</label>
 
-<form action="play" enctype="application/x-www-form-urlencoded">
-
-    <label class="d-block mb-2">
-        Stapels:
-        <input type="number" value="8" name="Discs" class="form-control" min="0" max="100" />
-    </label>
-
-    <label class="d-block mb-2">
-        Torens:
-        <input type="number" value="3" name="Towers" class="form-control" min="3" max="5" />
-    </label>
-
-    <button class="btn btn-success" type="submit">
-        <span class="oi oi-circle-check"></span>
-        Start!
-    </button>
-
-</form>
+<button class="btn btn-success" @onclick="Redirect">
+    <span class="oi oi-circle-check"></span>
+    Start!
+</button>
 
 
 @code {
+    public string Lang { get; set; } = "nl";
+
+    int discs = 8;
+
+    void Redirect()
+    {
+        EventCallback.Factory.
+
+        _navManager.NavigateTo($"/play/{Lang}?Discs={discs}");
+    }
 }

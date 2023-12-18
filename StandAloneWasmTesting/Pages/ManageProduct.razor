@@ -6,7 +6,7 @@
 @using StandAloneWasmTesting.Services
 @using StandAloneWasmTesting.Shared
 
-@if (product is null)
+@if (product is null || product is null)
 {
     <Loading></Loading>
 }
@@ -81,8 +81,9 @@ else
     /// Saves the changes made to the product
     /// </summary>
     /// <returns></returns>
-    async Task UpdateProductAsync()
+    async Task UpdateProductAsync(Product editedProduct)
     {
+        product = editedProduct;
         await productRepository.UpdateProduct(product!);
     }
 
