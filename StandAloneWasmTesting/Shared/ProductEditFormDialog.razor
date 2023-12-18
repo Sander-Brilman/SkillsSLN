@@ -1,0 +1,44 @@
+﻿@using StandAloneWasmTesting.Models
+
+<EditFormDialog Model="Model" OnSubmit="OnSubmit" @bind-Show:get="Show" @bind-Show:set="ShowChanged">
+
+    <label class="mb-2 d-block">
+        Titel
+        <InputText @bind-Value="Model.Title" class="form-control"></InputText>
+    </label>
+
+    <label class="mb-2 d-block">
+        Beschrijving
+        <InputText @bind-Value="Model.Description" class="form-control"></InputText>
+    </label>
+
+    <label class="mb-2 d-block">
+        Prijs
+        <InputNumber type="number" step="0.01" @bind-Value="Model.Price" class="form-control"></InputNumber>
+    </label>
+
+    <label class="mb-2 d-block">
+        Aantal Beschikbaar
+        <InputNumber type="number" @bind-Value="Model.Stock" class="form-control"></InputNumber>
+    </label>
+
+    <label class="d-block mb-2">
+        Foto url
+        <InputText type="url" @bind-Value="Model.ImageUrl" class="form-control"></InputText>
+    </label>
+
+</EditFormDialog>
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    [Parameter]
+    public Product Model { get; set; }
+
+    [Parameter]
+    public EventCallback<Product> OnSubmit { get; set; }
+}

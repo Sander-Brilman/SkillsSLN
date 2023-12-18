@@ -1,0 +1,22 @@
+﻿@page "/"
+@inject UserManager<ApplicationUser> userManager;
+
+<AuthorizeView Roles="Admin,Student">
+
+    <Authorized>
+
+        <Title>Welkom!</Title>
+
+        <a href="@(context.User.IsInRole("Admin") ? "/docent/" : "/student/")" class="btn btn-success">Ga naar home pagina</a>
+
+    </Authorized>
+
+    <NotAuthorized>
+        <Title>Je bent nog niet ingelogt..</Title>
+
+        <p>Klik <a href="/Account/Login">hier</a> om in te loggen..</p>
+    </NotAuthorized>
+
+</AuthorizeView>
+
+

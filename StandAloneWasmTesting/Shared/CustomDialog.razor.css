@@ -1,0 +1,9 @@
+﻿dialog {
+    padding: 30px;
+    border: none;
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
+    z-index: 1;
+    box-shadow: 0 0 0 200vw rgba(0,0,0, 50%);
+}

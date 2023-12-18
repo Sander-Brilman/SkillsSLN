@@ -1,0 +1,29 @@
+﻿@if (AlertText is not null)
+{
+    <div role="alert" class="alert alert-@BsTheme mb-2">
+        @AlertText
+    </div>
+}
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    string? _alertText;
+
+    public string? AlertText 
+    { 
+        get => _alertText; 
+        set
+        {
+            _alertText = value;
+            StateHasChanged();
+        } 
+    }
+
+    public string BsTheme { get; set; } = "warning";
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

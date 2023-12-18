@@ -1,0 +1,56 @@
+﻿<CustomDialog @bind-Show:get="Show" @bind-Show:set="ShowChanged">
+
+    <h3>
+        @ChildContent
+    </h3>
+
+    <button type="button" class="btn btn-primary" @onclick="OnYesClickedAsync">
+        Ja
+    </button>
+
+    <button type="button" class="btn btn-primary" @onclick="OnYesClickedAsync">
+        Nee
+    </button>
+
+</CustomDialog>
+
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnYes { get; set; }
+
+    [Parameter]
+    public EventCallback? OnNo { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private async Task OnYesClickedAsync()
+    {
+        await OnYes.InvokeAsync();
+        await CloseAsync();
+    }
+
+    private async Task OnNoClickedAsync()
+    {
+        if (OnNo is not null)
+        {
+            await OnNo.Value.InvokeAsync();
+        }
+
+        await CloseAsync();
+    }
+
+    private async Task CloseAsync()
+    {
+        Show = false;
+        await ShowChanged.InvokeAsync();
+    }
+}
+

@@ -1,0 +1,145 @@
+﻿@page "/docent/opdracht/{id:int}";
+@inject ApplicationDbContext dbContext;
+@inject NavigationManager navManager;
+@attribute [Authorize(Roles = "Admin")];
+@rendermode InteractiveServer
+
+
+@if (assingment is null || assingmentAnswers is null)
+{
+    <Title>Opdracht [..]</Title>
+
+    <Loading></Loading>
+}
+else
+{
+    <Title>Opdracht @assingment.Title</Title>
+
+    <div class="mb-3">
+        <button @onclick="_ => showEditDialog = true" class="btn btn-primary">
+            Opdracht aanpassen
+        </button>
+
+        <button @onclick="_ => showDeleteDialog = true" class="btn btn-outline-danger">
+            Opdracht verwijderen
+        </button>
+    </div>
+
+    <ul class="list-group mb-3">
+
+        <li class="list-group-item">
+            <b class="mb-2 d-block">Titel</b>
+            @assingment.Title
+        </li>
+
+        <li class="list-group-item">
+            <b class="mb-2 d-block">Inlever datum</b>
+            @assingment.DueDate
+        </li>
+
+        <li class="list-group-item">
+            <b class="mb-2 d-block">Antwoord notitie</b>
+            @assingment.Answer
+        </li>
+
+        <li class="list-group-item">
+            <b class="mb-2 d-block">Aangemaakt op</b>
+            @assingment.CreatedOn
+        </li>
+
+        <li class="list-group-item">
+            <b class="mb-2 d-block">Text</b>
+            <pre>@assingment.Text</pre>
+        </li>
+
+    </ul>
+
+
+    <h3 class="mb-3">Ingeleverde opdrachten [@assingment.Answers.Count / @amountOfStudents]</h3>
+
+    <ul class="list-goup">
+        @foreach (var item in assingmentAnswers)
+        {
+            <li class="list-group-item">
+                <a class="fw-bold d-block mb-2" href="/docent/student/@item.UserId/answer/@item.AnswerId">@item.Fullname</a>
+                @if (item.Grade is null)
+                {
+                    <span>Je hebt dit antwoord nog niet nagekeken</span>
+                }
+                else
+                {
+                    <span>Cijfer: @item.Grade</span>
+                }
+            </li>
+        }
+    </ul>
+
+    <EditAssingmentDialog Model="assingment" @bind-Show="showEditDialog" OnSumit="UpdateAssingmentAsync"></EditAssingmentDialog>
+
+    <YesNoDialog @bind-Show="showDeleteDialog" OnYes="DeleteAssingmentAsync"></YesNoDialog>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [CascadingParameter]
+    public CascadingAlertBox AlertBox { get; set; }
+
+    Assingment? assingment;
+
+    AssingmentAnswerListItem[]? assingmentAnswers;
+
+    public record AssingmentAnswerListItem(string UserId, string Fullname, int? Grade, int AnswerId);
+
+    int? amountOfStudents;
+
+    bool showEditDialog = false;
+    async Task UpdateAssingmentAsync()
+    {
+        await dbContext.SaveChangesAsync();
+
+        AlertBox.BsTheme = "success";
+        AlertBox.AlertText = "Veranderingen aan opdracht opgeslagen!";
+    }
+
+    bool showDeleteDialog = false;
+    async Task DeleteAssingmentAsync()
+    {
+        dbContext.Assingments.Remove(assingment!);
+        await dbContext.SaveChangesAsync();
+
+        AlertBox.BsTheme = "success";
+        AlertBox.AlertText = "Opdracht verwijdert!";
+
+        navManager.NavigateTo("/docent/student/");
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        assingment = await dbContext.Assingments.FindAsync(Id);
+
+        if (assingment is null)
+        {
+            navManager.NavigateTo("/docent/opdracht/");
+        }
+
+        assingmentAnswers = await dbContext.AssingmentsAnswers
+            .Where(a => a.AssingmentId == Id)
+            .Select(a => new AssingmentAnswerListItem(a.User.Id, a.User.FullName, a.Grade, a.Id))
+            .ToArrayAsync();
+
+        amountOfStudents = await dbContext
+            .UserRoles
+            .Join(
+                dbContext.Roles,
+                ur => ur.RoleId,
+                r => r.Id,
+                (x, xx) => new { x.UserId, xx.Name }
+            )
+            .Where(x => x.Name == "Admin")
+            .CountAsync();
+    }
+
+}

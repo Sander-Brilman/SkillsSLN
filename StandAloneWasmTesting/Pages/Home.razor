@@ -1,0 +1,72 @@
+﻿@page "/"
+@inject ProductRepository productRepo;
+
+@using StandAloneWasmTesting.Models
+@using StandAloneWasmTesting.Services
+@using StandAloneWasmTesting.Shared
+
+
+<PageTitle>Home</PageTitle>
+
+<h1 class="mb-2">Producten</h1>
+
+
+
+@if (products is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <button type="button" @onclick="_ => showCreateProductDialog = true" class="btn btn-success mb-2">
+        Product toevoegen
+    </button>
+
+    <div class="d-flex flex-wrap">
+
+        @foreach (var product in products)
+        {
+            <div class="card m-1" style="width: 18rem;">
+                <img class="card-img-top" src="@product.ImageUrl" alt="image">
+                <div class="card-body">
+                    <h5 class="card-title">@product.Title</h5>
+                    <p class="card-text">@product.Description</p>
+                    <hr />
+                    <p class="text-secondary">
+                        Prijs: @product.Price • Aantal: @product.Stock
+                    </p>
+                    <a href="/product/@product.Id" class="btn btn-success">Beheren</a>
+                </div>
+            </div>
+        }
+
+    </div>
+}
+
+
+<ProductEditFormDialog @bind-Show="showCreateProductDialog" Model="product" OnSubmit="AddProductToList">
+
+</ProductEditFormDialog>
+
+
+@code {
+    List<Product>? products;
+
+    Product product = new();
+
+    /// <summary>
+    /// Adds the newly created product to the list and resets the product field to a new empty product
+    /// </summary>
+    void AddProductToList()
+    {
+        products!.Add(product);
+        product = new();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await productRepo.GetAllProductsAsync();
+    }
+
+    bool showCreateProductDialog = false;
+}

@@ -1,0 +1,99 @@
+﻿@page "/product/{id:int}"
+@inject NavigationManager navigationManager;
+@inject ProductRepository productRepository
+
+@using StandAloneWasmTesting.Models
+@using StandAloneWasmTesting.Services
+@using StandAloneWasmTesting.Shared
+
+@if (product is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <h1 class="text-primary mb-2">Product @product.Title</h1>
+
+    <div class="mb-2">
+
+        <button type="button" @onclick="_ => showEditForm = true" class="btn btn-primary">
+            Aanpassen
+        </button>
+
+        <button type="button" @onclick="_ => showDeleteForm = true" class="btn btn-outline-danger">
+            Verwijderen
+        </button>
+
+    </div>
+
+    <ul class="list-group">
+
+        <li class="list-group-item">
+            <b class="lead mb-2 d-block">Titel</b>
+            @product.Title
+        </li>
+
+        <li class="list-group-item">
+            <b class="lead mb-2 d-block">Beschrijving</b>
+            @product.Description
+        </li>
+
+        <li class="list-group-item">
+            <b class="lead mb-2 d-block">Prijs</b>
+            @product.Price
+        </li>
+
+        <li class="list-group-item">
+            <b class="lead mb-2 d-block">Op voorraad</b>
+            @product.Stock
+        </li>
+
+    </ul>
+
+    <ProductEditFormDialog OnSubmit="UpdateProductAsync" @bind-Show="showEditForm" Model="product"></ProductEditFormDialog>
+
+    <YesNoDialog @bind-Show="showDeleteForm" OnYes="DeleteProductAsync">Weet je zeker dat je dit product wilt verwijderen?</YesNoDialog>
+}
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    Product? product;
+
+    bool showEditForm = false;
+    bool showDeleteForm = false;
+
+    /// <summary>
+    /// Deletes the product and redirects the user back to the product list page
+    /// </summary>
+    /// <returns></returns>
+    async Task DeleteProductAsync()
+    {
+        await productRepository.DeleteProduct(product!);
+
+        navigationManager.NavigateTo("/");
+    }
+
+    /// <summary>
+    /// Saves the changes made to the product
+    /// </summary>
+    /// <returns></returns>
+    async Task UpdateProductAsync()
+    {
+        await productRepository.UpdateProduct(product!);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await productRepository.GetSingleProduct(Id);
+
+        if (product is null)
+        {
+            navigationManager.NavigateTo("/");
+        }
+    }
+
+}

@@ -1,0 +1,45 @@
+﻿
+
+<EditFormDialog OnSubmit="OnSumit" Model="Model" @bind-Show:get="Show" @bind-Show:set="ShowChanged">
+
+    <label class="d-block mb-2">
+        Titel
+        <input @bind="Model.Title" class="form-control" />
+    </label>
+
+    <label class="d-block mb-2">
+        tekst
+        <textarea @bind="Model.Text" class="form-control"></textarea>
+    </label>
+
+    <label class="d-block mb-2">
+        Inlever datum
+        <input @bind="Model.DueDate" type="datetime" class="form-control" />
+    </label>
+
+    <label class="d-block mb-2">
+        Antwoord notitie
+        <input @bind="Model.Answer" type="datetime" class="form-control" />
+    </label>
+
+    <div class="form-check form-switch">
+        <input class="form-check-input" @bind="Model.AllowOverDueTurningIn" type="checkbox" id="flexSwitchCheckDefault">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Mag te laat inleveren</label>
+    </div>
+
+</EditFormDialog>
+
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    [Parameter]
+    public Assingment Model { get; set; }
+
+    [Parameter]
+    public EventCallback OnSumit { get; set; }
+}

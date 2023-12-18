@@ -1,0 +1,168 @@
+﻿@page "/docent/student/{id}"
+@rendermode InteractiveServer
+@using EducationAssingmentsApp.Extentions
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<ApplicationUser> userManager;
+@inject ApplicationDbContext dbContext;
+@inject NavigationManager navManager;
+
+
+@if (student is null || assingmentAnswers is null || missingAssingments is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <Title>Student @student.FullName beheren</Title>
+
+    <div class="mb-3">
+        <button @onclick="_ => showDeleteForm = true" class="btn btn-outline-danger">
+            Verwijderen
+        </button>
+
+        <button @onclick="_ => showResetPasswordForm = true" class="btn btn-outline-warning">
+            Wachtwoord resetten
+        </button>
+
+        <button @onclick="_ => showResetPasswordForm = true" class="btn btn-primary">
+            Student data aanpassen
+        </button>
+    </div>
+
+    <h3>Student informatie</h3>
+
+    <ul class="list-group">
+        <li class="list-group-item">
+            <b class="d-block mb-2">Naam</b>
+            @student.FullName
+        </li>
+        <li class="list-group-item">
+            <b class="d-block mb-2">Email</b>
+            @student.Email
+        </li>
+        <li class="list-group-item">
+            <b class="d-block mb-2">Telefoon nummer</b>
+            @student.PhoneNumber
+        </li>
+    </ul>
+
+    <h3 class="mb-2">Ingeleverde opdrachten [@(assingmentAnswers.Count) / @(maxAssingments)]</h3>
+
+    <ul class="list-group mb-3">
+        @foreach (var answer in assingmentAnswers)
+        {
+            <li class="list-group-item">
+                <b class="d-block mb-2">
+                    @if (answer.Grade is not null)
+                    {
+                        <span class="text-@(answer.Grade < 50 ? "danger" : "success")">[@answer.Grade]</span>
+                    }
+                    @answer.Assingment.Title 
+                </b>
+                @if (answer.Grade is null)
+                {
+                    <span>Je hebt dit antwoord nog niet nagekeken</span>
+                }
+                else
+                {
+                    <span>Je hebt dit antwoord al nagekeken</span>
+                }
+            </li>
+        }
+    </ul>
+
+    <h3 class="mb-2">Missende opdrachten</h3>
+
+    <ul class="list-group">
+        @foreach (var item in missingAssingments)
+        {
+            <li class="list-group-item">
+                <a href="/docent/opdracht/@item.Id">@item.Title</a>
+            </li>
+        }
+    </ul>
+
+
+
+    <EditStudentDialog Model="student" @bind-Show="showEditForm" OnSubmit="UpdateStudentAsync" />
+
+    <YesNoDialog @bind-Show="showDeleteForm" OnYes="DeleteStudentAsync">
+        Weet je zeker dat je student @student.FullName wilt verwijderen?
+    </YesNoDialog>
+
+    <YesNoDialog @bind-Show="showResetPasswordForm" OnYes="ResetStudentPasswordAsync">
+        Weet je zeker dat je het wachtwoord voor deze student wilt veranderen?
+    </YesNoDialog>
+}
+
+
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    [CascadingParameter]
+    public CascadingAlertBox AlertBox { get; set; }
+
+    ApplicationUser? student;
+
+    List<AssingmentAnswer>? assingmentAnswers;
+
+    List<Assingment>? missingAssingments;
+
+    int maxAssingments = 0;
+
+    bool showEditForm = false;
+
+    async Task UpdateStudentAsync()
+    {
+        await userManager.UpdateAsync(student!);
+
+        AlertBox.BsTheme = "success";
+        AlertBox.AlertText = $"veranderingen aan student {student.FullName} opgeslagen!";
+    }
+
+    bool showDeleteForm = false;
+    async Task DeleteStudentAsync()
+    {
+        await userManager.DeleteAsync(student!);
+
+        AlertBox.BsTheme = "success";
+        AlertBox.AlertText = $"student {student.FullName} verwijdert";
+
+        navManager.NavigateTo("/docent/student/");
+    }
+
+    bool showResetPasswordForm = false;
+    async Task ResetStudentPasswordAsync()
+    {
+        string newStudentPassword = await userManager.ResetPasswordToNewRandomAsync(student!);
+
+        AlertBox.BsTheme = "success";
+        AlertBox.AlertText = $"wachtwoord van student {student.FullName} verandert naar {newStudentPassword}";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        student = await userManager.FindByIdAsync(Id);
+
+        if (student is null)
+        {
+            navManager.NavigateTo("/docent/student/");
+            return;
+        }
+
+        assingmentAnswers = await dbContext.AssingmentsAnswers
+            .Where(a => a.UserId == student.Id)
+            .Include(a => a.Assingment)
+            .ToListAsync();
+
+        maxAssingments = await dbContext.Assingments.CountAsync();
+
+        missingAssingments = await dbContext.Assingments
+            .Where(a => a.Answers.Any(aa => aa.UserId == student.Id) == false)
+            .ToListAsync();
+    }
+}

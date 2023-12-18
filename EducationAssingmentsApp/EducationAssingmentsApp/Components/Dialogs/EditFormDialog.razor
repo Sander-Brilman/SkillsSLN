@@ -1,0 +1,47 @@
+﻿@typeparam ModelT
+
+<CustomDialog @bind-Show:set="ShowChanged" @bind-Show:get="Show">
+    <EditForm Model="Model" OnValidSubmit="OnValidSubmitAsync">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+
+        @ChildContent
+
+        <button class="btn btn-primary" type="submit">
+            Opslaan
+        </button>
+
+        <button @onclick="CloseAsync" type="button" class="btn btn-outline-secondary">
+            Sluiten
+        </button>
+    </EditForm>
+</CustomDialog>
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+
+    [Parameter]
+    public ModelT Model { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    async Task OnValidSubmitAsync()
+    {
+        await OnSubmit.InvokeAsync();
+        await CloseAsync();
+    }
+
+    async Task CloseAsync()
+    {
+        Show = false;
+        await ShowChanged.InvokeAsync();
+    }
+}

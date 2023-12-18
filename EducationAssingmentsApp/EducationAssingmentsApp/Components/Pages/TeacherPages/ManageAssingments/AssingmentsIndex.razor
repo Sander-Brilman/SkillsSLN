@@ -1,0 +1,62 @@
+﻿@page "/docent/opdracht";
+@inject ApplicationDbContext dbContext;
+@attribute [Authorize(Roles = "Admin")];
+@rendermode InteractiveServer
+
+
+<Title>Alle opdrachten bekijken:</Title>
+
+@if (assingments is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <button @onclick="_ => showCreateForm = true" class="btn btn-success mb-3">
+        Nieuwe toevoegen
+    </button>
+
+    <ul class="list-group">
+        @foreach (var assingment in assingments)
+        {
+            <li class="list-group-item">
+                <a href="/docent/opdracht/@assingment.Id">@assingment.Title</a>
+            </li>
+        }
+    </ul>
+
+    <EditAssingmentDialog Model="newAssingment" OnSumit="AddAssingmentAsync" @bind-Show="showCreateForm" />
+}
+
+
+
+@code {
+    [CascadingParameter]
+    public CascadingAlertBox AlertBox { get; set; }
+
+    List<AssingmentListItem>? assingments;
+
+    bool showCreateForm = false;
+
+    Assingment newAssingment = new();
+
+    async Task AddAssingmentAsync()
+    {
+        dbContext.Assingments.Add(newAssingment);
+        await dbContext.SaveChangesAsync();
+
+        AlertBox.BsTheme = "success";
+        AlertBox.AlertText = "Opdracht toegevoegd!";
+
+        newAssingment = new();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        assingments = await dbContext.Assingments
+            .Select(a => new AssingmentListItem(a.Id, a.Title))
+            .ToListAsync();
+    }
+
+    public record AssingmentListItem(int Id, string Title);
+}

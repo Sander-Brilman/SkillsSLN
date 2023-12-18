@@ -1,0 +1,75 @@
+﻿@page "/docent/student/"
+@rendermode InteractiveServer
+
+@using EducationAssingmentsApp.Extentions
+@attribute [Authorize(Roles = "Admin")]
+@inject UserManager<ApplicationUser> userManager;
+@inject ApplicationDbContext dbContext;
+
+<Title>Studenten beheren!</Title>
+
+@if (students is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <button class="btn btn-success" @onclick="_ => showCreateForm = true">
+        Student toevoegen
+    </button>
+
+    <ul class="list-group">
+
+        @foreach (var student in students)
+        {
+            <li class="list-group-item">
+                <a href="/docent/student/@student.Id" class="fw-bold d-block mb-2">@student.FullName</a>
+                @student.Email
+            </li>
+        }
+
+    </ul>
+
+    <EditStudentDialog @bind-Show="showCreateForm" Model="newStudent" />
+}
+
+@code {
+    [CascadingParameter]
+    public CascadingAlertBox AlertBox { get; set; }
+
+    List<ApplicationUser>? students;
+
+    bool showCreateForm = false;
+
+    ApplicationUser newStudent = new();
+
+    async Task OnNewStudentAddedAsync()
+    {
+        (bool success, string? newPassword) = await userManager.CreateStudentAsync(newStudent);
+
+        if (success)
+        {
+            AlertBox.BsTheme = "success";
+            AlertBox.AlertText = $"Student {newStudent.FullName} aangemaakt. Wachtwoord: {newPassword}";
+
+            newStudent = new();
+
+            await GetAllUsersAsync();
+
+            return;
+        }
+
+        AlertBox.BsTheme = "warning";
+        AlertBox.AlertText = $"Error bij het aanmaken van de student.";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllUsersAsync();
+    }
+
+    async Task GetAllUsersAsync()
+    {
+        students = (await userManager.GetUsersInRoleAsync("Student")).ToList();
+    }
+}

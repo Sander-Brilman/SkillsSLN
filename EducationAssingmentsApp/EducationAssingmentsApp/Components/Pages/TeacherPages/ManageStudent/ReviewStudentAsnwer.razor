@@ -1,0 +1,104 @@
+﻿@page "/docent/student/{studentId}/answer/{answerId:int}"
+@attribute [Authorize(Roles = "Admin")];
+@inject ApplicationDbContext dbContext;
+@inject UserManager<ApplicationUser> userMamager;
+@inject NavigationManager navManager;
+@rendermode InteractiveServer
+
+
+@if (student is null || answer is null)
+{
+    <Loading></Loading>
+}
+else if (answer.Grade is not null && submittedAnswer)
+{
+    string h2 = $"ingelevered op: {answer.TurnedInAt.Date}";
+
+    <Title H2="@h2">Opdracht: <a href="/docent/opdracht/@answer.Assingment.Id">@answer.Assingment.Title</a></Title>
+
+    <h3>Voor deze opdracht is een <b>@(answer.Grade)%</b> gegeven</h3>
+}
+else
+{
+    string h2 = $"ingelevered op: {answer.TurnedInAt.Date}";
+    <Title H2="@h2">Opdracht: <a href="/docent/opdracht/@answer.Assingment.Id">@answer.Assingment.Title</a> nakijken</Title>
+
+    @if (answer.TurnedInAt > answer.Assingment.DueDate)
+    {
+        <div class="alert alert-info mb-2" role="alert">
+            Deze opdracht is te laat ingeleverd
+        </div>
+    }
+
+    <h3>Verwachte antwoord:</h3>
+    <p class="mb-4">@answer.Assingment.Answer</p>
+
+    <h3>Ingeleverde antwoord:</h3>
+    <p class="mb-4">@answer.Answer</p>
+
+    <EditForm Model="answer" class="mb-3">
+
+        <label class="d-block mb-2">
+            Cijfer (1 - 100)
+            <input class="form-control" type="number" @bind="answer.Grade" required>
+        </label>
+
+        <button class="btn btn-success" type="submit">Cijfer Opslaan</button>
+    </EditForm>
+
+    <h3>Beschrijving van de opdracht</h3>
+    <pre class="mb-3">@answer.Assingment.Text</pre>
+
+}
+
+<a href="@navManager.HistoryEntryState" class="btn btn-outline-info">Terug</a>
+
+@code {
+    [Parameter]
+    public string StudentId { get; set; }
+
+
+    [Parameter]
+    public int AnswerId { get; set; }
+
+    [CascadingParameter]
+    public CascadingAlertBox AlertBox { get; set; }
+
+    ApplicationUser? student;
+
+    AssingmentAnswer? answer;
+
+    bool submittedAnswer = false;
+
+    async Task SubmitGradeAsync()
+    {
+        await dbContext.SaveChangesAsync();
+
+        AlertBox.BsTheme = "success";
+        AlertBox.AlertText = "Cijfer opgeslagen";
+
+        submittedAnswer = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        student = await userMamager.FindByIdAsync(StudentId);
+
+        if (student is null)
+        {
+            navManager.NavigateTo("/docent/student/");
+        }
+
+        answer = await dbContext.AssingmentsAnswers
+            .Include(a => a.Assingment)
+            .FirstOrDefaultAsync(a => a.Id == AnswerId);
+
+        if (answer is null)
+        {
+            navManager.NavigateTo("/docent/student/" + student.Id);
+        }
+
+        submittedAnswer = answer.Grade is null;
+    }
+
+}

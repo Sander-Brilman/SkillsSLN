@@ -1,0 +1,16 @@
+﻿<h1 class="text-primary @(H2 is null ? "mb-3" : "")">
+    @ChildContent
+</h1>
+
+@if (H2 is not null)
+{
+    <h2 class="text-secondary mb-3">@H2</h2>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string? H2 { get; set; }
+}

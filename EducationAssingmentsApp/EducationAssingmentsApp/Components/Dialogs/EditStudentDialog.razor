@@ -1,0 +1,33 @@
+﻿<EditFormDialog Model="Model" OnSubmit="OnSubmit" @bind-Show:get="Show" @bind-Show:set="ShowChanged">
+
+    <label class="d-block mb-2">
+        Volledige naam
+        <input required @bind="Model.FullName" class="form-control">
+    </label>
+
+    <label class="d-block mb-2">
+        Email adres
+        <input required @bind="Model.Email" type="email" class="form-control">
+    </label>
+
+    <label class="d-block mb-2">
+        Telefoon nummer
+        <input required @bind="Model.PhoneNumber" type="tel" class="form-control">
+    </label>
+
+</EditFormDialog>
+
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    [Parameter]
+    public ApplicationUser Model { get; set; }
+
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+}

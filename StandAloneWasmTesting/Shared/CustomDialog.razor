@@ -1,0 +1,14 @@
+﻿<dialog popover open="@Show">
+    @ChildContent
+</dialog>
+
+@code {
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

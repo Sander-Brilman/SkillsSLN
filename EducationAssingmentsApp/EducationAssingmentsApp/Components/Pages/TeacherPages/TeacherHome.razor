@@ -1,0 +1,31 @@
+﻿@page "/docent/"
+@inject UserManager<ApplicationUser> userManager;
+@attribute [Authorize(Roles = "Admin")]
+
+@if (currentUser is null)
+{
+    <Loading></Loading>
+}
+else
+{
+    <Title>Welkom @currentUser.FullName op het docenten paneel!</Title>
+
+    <p class="mb-3">Je hebt hier de keuze uit:</p>
+
+    <a href="/docent/student/" class="btn btn-primary">Studenten beheren</a>
+    <a href="/docent/opdracht/" class="btn btn-primary">Opdrachten beheren</a>
+}
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState> User { get; set; }
+
+    ApplicationUser? currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ClaimsPrincipal user = (await User).User;
+
+        currentUser = await userManager.GetUserAsync(user);
+    }
+}
